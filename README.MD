@@ -28,7 +28,7 @@ Este proyecto pretende resolver y automatizar procesos en la coordinación de in
 ## Configurar Base de Datos
 1. Acceder a PostgreSQL desde SQL Shell
 
-    Despues de instalar PostgreSQL, entrampos a SQL Shell.
+    Despues de instalar PostgreSQL, entramos a SQL Shell.
     Damos intro hasta llegar a la contraseña, que es la puesta durante la instalación.
 
     ```bash
@@ -53,3 +53,18 @@ Este proyecto pretende resolver y automatizar procesos en la coordinación de in
 
     ```bash
     ALTER USER django SUPERUSER;
+
+## Iniciar el servidor de Desarrollo
+1. En la terminal, accede a la raiz del proyecto:
+
+    ```bash
+    cd coordinacion
+2. En caso de usar el ambiente virtual, hay que activarlo:
+
+    ```bash
+    source venv/bin/activate  # En Windows, use "venv\Scripts\activate"
+3. Ejecuta la siguiente linea:
+
+    ```bash
+    python manage.py runserver
+4. En tu navegador, abre localhost:8000
