@@ -24,7 +24,8 @@ Este proyecto pretende resolver y automatizar procesos en la coordinación de in
 3. Instalar Dependencias
 
     ```bash
-    pip install -r requirements.txt
+    pip install django
+    pip install "psycopg[binary]"
 ## Configurar Base de Datos
 1. Acceder a PostgreSQL desde SQL Shell
 
