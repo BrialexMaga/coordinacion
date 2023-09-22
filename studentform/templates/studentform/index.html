@@ -1,11 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
 </head>
 <body>
-    Index.html texto
+    <h1>Index</h1>
+    <h2>Estudiantes</h2>
+    <table>
+        <thead>
+            <th>Id_estudiante</th>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Estatus</th>
+            <th>Id de Contacto</th>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.code }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.status }}</td>
+                    <td>{{ student.contact_id }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Contacto</h2>
+    <table>
+        <thead>
+            <th>id_contacto</th>
+            <th>Telefono</th>
+            <th>Correo</th>
+            <th>Corrreo de UDG</th>
+            <th>Telefono de Emergencia</th>
+            <th>Red Social</th>
+        </thead>
+        <tbody>
+            {% for contact in contacts %}
+                <tr>
+                    <td>{{ contact.contact_id }}</td>
+                    <td>{{ contact.phone }}</td>
+                    <td>{{ contact.email }}</td>
+                    <td>{{ contact.udg_email }}</td>
+                    <td>{{ contact.emergency_phone }}</td>
+                    <td>{{ contact.url_socialnet }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Ciclo</h2>
+    <table>
+        <thead>
+            <th>id_ciclo</th>
+            <th>Periodo</th>
+        </thead>
+        <tbody>
+            {% for cycle in cycles %}
+                <tr>
+                    <td>{{ cycle.cycle_id }}</td>
+                    <td>{{ cycle.period }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
