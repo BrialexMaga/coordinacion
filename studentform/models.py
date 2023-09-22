@@ -17,7 +17,7 @@ class Contact(models.Model):
     url_socialnet = models.URLField(null=True, blank=True)
 
     def __str__(self):
-        return self.phone
+        return f"{self.contact_id}"
     
 class Student(models.Model):
     student_id = models.BigAutoField(primary_key=True)
