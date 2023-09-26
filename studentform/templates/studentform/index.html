@@ -16,7 +16,6 @@
             <th>Código</th>
             <th>Nombre</th>
             <th>Estatus</th>
-            <th>Id de Contacto</th>
         </thead>
         <tbody>
             {% for student in students %}
@@ -25,7 +24,6 @@
                     <td>{{ student.code }}</td>
                     <td>{{ student.name }}</td>
                     <td>{{ student.status }}</td>
-                    <td>{{ student.contact_id }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -40,6 +38,7 @@
             <th>Corrreo de UDG</th>
             <th>Telefono de Emergencia</th>
             <th>Red Social</th>
+            <th>Estudiante</th>
         </thead>
         <tbody>
             {% for contact in contacts %}
@@ -50,6 +49,7 @@
                     <td>{{ contact.udg_email }}</td>
                     <td>{{ contact.emergency_phone }}</td>
                     <td>{{ contact.url_socialnet }}</td>
+                    <td>{{ contact.student_id }}</td>
                 </tr>
             {% endfor %}
         </tbody>
