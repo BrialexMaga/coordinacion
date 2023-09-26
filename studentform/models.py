@@ -8,6 +8,15 @@ class School_Cycle(models.Model):
     def __str__(self):
         return self.period
     
+class Student(models.Model):
+    student_id = models.BigAutoField(primary_key=True)
+    code = models.CharField(max_length=9, unique=True)
+    name = models.CharField(max_length=100)
+    status = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+    
 class Contact(models.Model):
     contact_id = models.BigAutoField(primary_key=True)
     phone = models.CharField(max_length=15)
@@ -15,16 +24,8 @@ class Contact(models.Model):
     udg_email = models.EmailField()
     emergency_phone = models.CharField(max_length=15)
     url_socialnet = models.URLField(null=True, blank=True)
+    student_id = models.OneToOneField(Student, on_delete=models.CASCADE, null=True) # Delete null=True later
 
     def __str__(self):
         return f"{self.contact_id}"
     
-class Student(models.Model):
-    student_id = models.BigAutoField(primary_key=True)
-    code = models.CharField(max_length=9, unique=True)
-    name = models.CharField(max_length=100)
-    status = models.CharField(max_length=10)
-    contact_id = models.OneToOneField(Contact, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
