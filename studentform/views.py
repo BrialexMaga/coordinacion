@@ -21,7 +21,7 @@ def createFormStudent(request):
 
             # Save
             student = Student(code=code, name=name, status=status)
-            #student.save()
+            student.save()
 
             return redirect('index') # Put the name of the views in here to redirect.
     else:
