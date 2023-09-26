@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Student, Contact, School_Cycle
 from .forms import StudentForm
 # Create your views here.
@@ -21,7 +21,9 @@ def createFormStudent(request):
 
             # Save
             student = Student(code=code, name=name, status=status)
-            student.save()
+            #student.save()
+
+            return redirect('index') # Put the name of the views in here to redirect.
     else:
         form = StudentForm()
     
