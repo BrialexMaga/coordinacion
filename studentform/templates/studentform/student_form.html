@@ -9,6 +9,7 @@
 </head>
 <body>
     <h1>Formulario de Estudiante</h1>
+    <p>Factory Activada</p>
     <form action="/studentform/createform/" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
