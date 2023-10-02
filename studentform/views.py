@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
 
 from .models import Student, Contact, School_Cycle
@@ -37,26 +37,19 @@ def createFormStudent(request):
     
     return render(request, "studentform/student_form.html", {'form': form})
 
-def createFormContact(request):
+def createFormContact(request, student_id):
+    student = get_object_or_404(Student, pk=student_id)
+    contact, created = Contact.objects.get_or_create(student_id=student)
+
     if request.method == 'POST':
-        form = ContactForm(request.POST)
+        form = ContactForm(request.POST or None, instance=contact)
         if form.is_valid():
-            # Saves Form in the DataBase
-            phone = form.cleaned_data['phone']
-            email = form.cleaned_data['email']
-            udg_email = form.cleaned_data['udg_email']
-            emergency_phone = form.cleaned_data['emergency_phone']
-            url_socialnet = form.cleaned_data['url_socialnet']
-
-            contact = Contact(phone=phone, email=email, udg_email=udg_email, 
-                              emergency_phone=emergency_phone, url_socialnet=url_socialnet)
-            contact.save()
-
-            return redirect('index') # Put the name of the views in here to redirect.
+            form.save()
+            return redirect('index')
     else:
-        form = ContactForm()
+        form = ContactForm(instance=contact)
 
-    return render(request, "studentform/contact_form.html", {'form': form})
+    return render(request, "studentform/contact_form.html", {'form': form, 'student': student})
 
 @transaction.atomic
 def callStudentFactory():
