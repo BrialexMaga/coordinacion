@@ -12,10 +12,11 @@
     <h2>Estudiantes</h2>
     <table>
         <thead>
-            <th>Id_estudiante</th>
+            <th>id</th>
             <th>Código</th>
             <th>Nombre</th>
             <th>Estatus</th>
+            <th>Contacto</th>
         </thead>
         <tbody>
             {% for student in students %}
@@ -24,6 +25,7 @@
                     <td>{{ student.code }}</td>
                     <td>{{ student.name }}</td>
                     <td>{{ student.status }}</td>
+                    <td><a href="{% url 'contact-form' student.student_id %}">Crear/Actualizar Contacto</a></td>
                 </tr>
             {% endfor %}
         </tbody>
