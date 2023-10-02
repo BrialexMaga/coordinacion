@@ -9,4 +9,4 @@ class StudentForm(forms.ModelForm):
 class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
-        fields = '__all__'
+        fields = ["phone", "email", "udg_email", "emergency_phone", "url_socialnet"]

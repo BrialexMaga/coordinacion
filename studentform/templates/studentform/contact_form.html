@@ -1,0 +1,17 @@
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto</title>
+    <link rel="stylesheet" type="text/css" href="">
+</head>
+<body>
+    <h1>Formulario de Contacto</h1>
+    <form action="/studentform/createform/" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Guardar">
+    </form>
+</body>
+</html>
