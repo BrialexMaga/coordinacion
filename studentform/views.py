@@ -12,6 +12,13 @@ def index(request):
     students = Student.objects.all()
     contacts = Contact.objects.all()
     cycles = School_Cycle.objects.all()
+
+    if request.GET.get('name') or request.GET.get('code'):
+        name = request.GET.get('name', '')
+        code = request.GET.get('code', '')
+
+        students = students.filter(name__icontains=name, code__icontains=code)
+
     return render(request, "studentform/index.html", {'students':students, 'contacts':contacts, 'cycles':cycles})
 
 def createFormStudent(request):

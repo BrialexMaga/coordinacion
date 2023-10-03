@@ -10,6 +10,12 @@
 <body>
     <h1>Index</h1>
     <h2>Estudiantes</h2>
+    <form method="GET" action="{% url 'index' %}">
+        <input type="text" name="code" placeholder="Buscar por código">
+        <input type="text" name="name" placeholder="Buscar por nombre">
+        <button type="submit">Buscar</button>
+    </form>
+      
     <table>
         <thead>
             <th>id</th>
