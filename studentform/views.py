@@ -61,7 +61,7 @@ def createFormContact(request, idStudent):
 @transaction.atomic
 def callStudentFactory():
     # Factory
-    students = StudentFactory.create_batch(10)
+    students = StudentFactory.create_batch(5)
 
     for student in students:
         student.save()
