@@ -1,10 +1,10 @@
 from django import forms
-from .models import Student, Contact
+from .models import Student, Contact, School_Cycle
 
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ["code", "name", "status"]
+        fields = ["code", "name", "status", "admission_cycle"]
     
 class ContactForm(forms.ModelForm):
     class Meta:
