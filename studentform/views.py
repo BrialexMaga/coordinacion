@@ -44,9 +44,9 @@ def createFormStudent(request):
     
     return render(request, "studentform/student_form.html", {'form': form})
 
-def createFormContact(request, student_id):
-    student = get_object_or_404(Student, pk=student_id)
-    contact, created = Contact.objects.get_or_create(student_id=student)
+def createFormContact(request, idStudent):
+    student = get_object_or_404(Student, pk=idStudent)
+    contact, created = Contact.objects.get_or_create(idStudent=student)
 
     if request.method == 'POST':
         form = ContactForm(request.POST or None, instance=contact)

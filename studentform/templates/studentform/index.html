@@ -22,16 +22,18 @@
             <th>Código</th>
             <th>Nombre</th>
             <th>Estatus</th>
+            <th>Admisión</th>
             <th>Contacto</th>
         </thead>
         <tbody>
             {% for student in students %}
                 <tr>
-                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.idStudent }}</td>
                     <td>{{ student.code }}</td>
                     <td>{{ student.name }}</td>
                     <td>{{ student.status }}</td>
-                    <td><a href="{% url 'contact-form' student.student_id %}">Crear/Actualizar Contacto</a></td>
+                    <td>{{ student.admission_cycle }} </td>
+                    <td><a href="{% url 'contact-form' student.idStudent %}">Crear/Actualizar Contacto</a></td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -51,13 +53,13 @@
         <tbody>
             {% for contact in contacts %}
                 <tr>
-                    <td>{{ contact.contact_id }}</td>
+                    <td>{{ contact.idContact }}</td>
                     <td>{{ contact.phone }}</td>
                     <td>{{ contact.email }}</td>
                     <td>{{ contact.udg_email }}</td>
                     <td>{{ contact.emergency_phone }}</td>
                     <td>{{ contact.url_socialnet }}</td>
-                    <td>{{ contact.student_id }}</td>
+                    <td>{{ contact.idStudent }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -72,7 +74,7 @@
         <tbody>
             {% for cycle in cycles %}
                 <tr>
-                    <td>{{ cycle.cycle_id }}</td>
+                    <td>{{ cycle.idCycle }}</td>
                     <td>{{ cycle.period }}</td>
                 </tr>
             {% endfor %}
