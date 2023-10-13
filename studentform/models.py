@@ -33,13 +33,12 @@ class Student(models.Model):
     
 class Contact(models.Model):
     idContact = models.BigAutoField(primary_key=True)
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=25)
     email = models.EmailField()
     udg_email = models.EmailField()
-    emergency_phone = models.CharField(max_length=15)
+    emergency_phone = models.CharField(max_length=25)
     url_socialnet = models.URLField(null=True, blank=True)
     idStudent = models.OneToOneField(Student, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.contact_id}"
-    
+        return f"{self.idContact}"
