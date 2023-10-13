@@ -1,6 +1,6 @@
 import factory
 import random
-from .models import Student
+from .models import Student, Contact
 
 class StudentFactory(factory.Factory):
     class Meta:
@@ -22,3 +22,12 @@ class StudentFactory(factory.Factory):
         kwargs['admission_cycle'] = admission_cycle
 
         return super(StudentFactory, cls)._create(model_class, *args, **kwargs)
+    
+class ContactFactory(factory.Factory):
+    class Meta:
+        model = Contact
+
+    phone = factory.Faker('phone_number')
+    email = factory.Faker('email')
+    udg_email = factory.Faker('email')
+    emergency_phone = factory.Faker('phone_number')
