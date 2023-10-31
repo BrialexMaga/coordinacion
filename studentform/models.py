@@ -38,6 +38,8 @@ class Contact(models.Model):
     udg_email = models.EmailField()
     emergency_phone = models.CharField(max_length=25)
     url_socialnet = models.URLField(null=True, blank=True)
+    company = models.CharField(max_length=50, null=True, blank=True)
+    position = models.CharField(max_length=50, null=True, blank=True)
     idStudent = models.OneToOneField(Student, on_delete=models.CASCADE)
 
     def __str__(self):
