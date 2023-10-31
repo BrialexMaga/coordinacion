@@ -3,10 +3,13 @@ from django.db import models
 # Create your models here.
 class School_Cycle(models.Model):
     idCycle = models.AutoField(primary_key=True)
-    period = models.CharField(max_length=5)
+    year = models.CharField(max_length=5)
+    cycle_period = models.CharField(max_length=1)
+    start_date = models.DateField()
+    end_date = models.DateField()
 
     def __str__(self):
-        return self.period
+        return f"{self.year}{self.cycle_period}"
     
 class Student(models.Model):
     idStudent = models.BigAutoField(primary_key=True)
