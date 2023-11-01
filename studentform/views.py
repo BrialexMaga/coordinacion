@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
 
-from .models import Student, Contact, School_Cycle
+from .models import Student, Contact, School_Cycle, Career, Status
 from .forms import StudentForm, ContactForm
 from .factories import StudentFactory
 
@@ -12,6 +12,8 @@ def index(request):
     students = Student.objects.all()
     contacts = Contact.objects.all()
     cycles = School_Cycle.objects.all()
+    careers = Career.objects.all()
+    statuses = Status.objects.all()
 
     if request.GET.get('name') or request.GET.get('code'):
         name = request.GET.get('name', '')
@@ -19,7 +21,8 @@ def index(request):
 
         students = students.filter(name__icontains=name, code__icontains=code)
 
-    return render(request, "studentform/index.html", {'students':students, 'contacts':contacts, 'cycles':cycles})
+    return render(request, "studentform/index.html", {'students':students, 'contacts':contacts, 
+                                                      'cycles':cycles, 'careers':careers, 'statuses':statuses})
 
 def createFormStudent(request):
     if request.method == 'POST':

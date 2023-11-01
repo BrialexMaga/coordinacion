@@ -21,8 +21,12 @@
             <th>id</th>
             <th>Código</th>
             <th>Nombre</th>
+            <th>Primer Apellido</th>
+            <th>Segundo Apellido</th>
             <th>Estatus</th>
             <th>Admisión</th>
+            <th>Ultimo Ciclo</th>
+            <th>Carrera</th>
             <th>Contacto</th>
         </thead>
         <tbody>
@@ -31,8 +35,12 @@
                     <td>{{ student.idStudent }}</td>
                     <td>{{ student.code }}</td>
                     <td>{{ student.name }}</td>
+                    <td>{{ student.first_last_name }}</td>
+                    <td>{{ student.second_last_name }}</td>
                     <td>{{ student.status }}</td>
                     <td>{{ student.admission_cycle }} </td>
+                    <td>{{ student.last_cycle }} </td>
+                    <td>{{ student.idCareer }} </td>
                     <td><a href="{% url 'contact-form' student.idStudent %}">Crear/Actualizar Contacto</a></td>
                 </tr>
             {% endfor %}
@@ -69,13 +77,61 @@
     <table>
         <thead>
             <th>id_ciclo</th>
-            <th>Periodo</th>
+            <th>Ciclo</th>
+            <th>Año</th>
+            <th>Periodo escolar</th>
+            <th>Fecha de Inicio</th>
+            <th>Fecha de Finalización</th>
         </thead>
         <tbody>
             {% for cycle in cycles %}
                 <tr>
                     <td>{{ cycle.idCycle }}</td>
-                    <td>{{ cycle.period }}</td>
+                    <td>{{ cycle.year }}{{ cycle.cycle_period }}</td>
+                    <td>{{ cycle.year }}</td>
+                    <td>{{ cycle.cycle_period }}</td>
+                    <td>{{ cycle.start_date }}</td>
+                    <td>{{ cycle.end_date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Carrera</h2>
+    <table>
+        <thead>
+            <th>idCarrera</th>
+            <th>code_name</th>
+            <th>Nombre</th>
+            <th>creditos necesarios</th>
+            <th>Semestres</th>
+        </thead>
+        <tbody>
+            {% for career in careers %}
+                <tr>
+                    <td>{{ career.idCareer }}</td>
+                    <td>{{ career.code_name }}</td>
+                    <td>{{ career.name }}</td>
+                    <td>{{ career.needed_credits }}</td>
+                    <td>{{ career.semesters }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Estatus</h2>
+    <table>
+        <thead>
+            <th>idStatus</th>
+            <th>code_name</th>
+            <th>status</th>
+        </thead>
+        <tbody>
+            {% for status in statuses %}
+                <tr>
+                    <td>{{ status.idStatus }}</td>
+                    <td>{{ status.code_name }}</td>
+                    <td>{{ status.status }}</td>
                 </tr>
             {% endfor %}
         </tbody>

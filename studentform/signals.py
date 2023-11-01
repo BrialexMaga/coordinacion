@@ -4,6 +4,7 @@ from .models import Student
 
 from .factories import ContactFactory
 
+# Disable this on Deploy
 @receiver(post_save, sender=Student)
 def create_contact(sender, instance, created, **kwargs):
      if created:
