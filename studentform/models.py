@@ -11,25 +11,39 @@ class School_Cycle(models.Model):
     def __str__(self):
         return f"{self.year}{self.cycle_period}"
     
+class Career(models.Model):
+    idCareer = models.AutoField(primary_key=True)
+    code_name = models.CharField(max_length=5)
+    name = models.CharField(max_length=100)
+    needed_credits = models.PositiveSmallIntegerField()
+    semesters = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return self.code_name
+    
+class Status(models.Model):
+    idStatus = models.AutoField(primary_key=True)
+    code_name = models.CharField(max_length=3)
+    status = models.CharField(max_length=40)
+
+    def __str__(self):
+        return self.code_name
+    
 class Student(models.Model):
     idStudent = models.BigAutoField(primary_key=True)
     code = models.CharField(max_length=9, unique=True)
-    name = models.CharField(max_length=100)
-    status = models.CharField(max_length=10)
-    admission_cycle = models.CharField(max_length=5, null=True)
+    name = models.CharField(max_length=50)
+    first_last_name = models.CharField(max_length=30)
+    second_last_name = models.CharField(max_length=30)
 
-    '''
-    last_cycle = models.ForeignKey(
-        School_Cycle,
-        on_delete=models.CASCADE,
-        related_name='estudiantes_actual',
-        null=True,
-        blank=True,
-    )
-    '''
-
-    #average_score = models.SmallIntegerField()
-    #
+    status = models.ForeignKey(Status, on_delete=models.PROTECT,
+                               related_name='students')
+    admission_cycle = models.ForeignKey(School_Cycle, on_delete=models.PROTECT, 
+                                        related_name='admission_cycle')
+    last_cycle = models.ForeignKey(School_Cycle, on_delete=models.PROTECT, 
+                                   related_name='last_cycle')
+    idCareer = models.ForeignKey(Career, on_delete=models.PROTECT,
+                                 related_name='students')
 
     def __str__(self):
         return self.name
