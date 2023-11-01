@@ -27,7 +27,8 @@
             <th>Admisión</th>
             <th>Ultimo Ciclo</th>
             <th>Carrera</th>
-            <th>Contacto</th>
+            <th></th>
+            <th></th>
         </thead>
         <tbody>
             {% for student in students %}
@@ -41,6 +42,7 @@
                     <td>{{ student.admission_cycle }} </td>
                     <td>{{ student.last_cycle }} </td>
                     <td>{{ student.idCareer }} </td>
+                    <td><a href="{% url 'show-contact' student.idStudent %}">Ver Contacto</a></td>
                     <td><a href="{% url 'contact-form' student.idStudent %}">Crear/Actualizar Contacto</a></td>
                 </tr>
             {% endfor %}

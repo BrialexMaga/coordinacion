@@ -1,0 +1,51 @@
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto</title>
+    <link rel="stylesheet" type="text/css" href="">
+</head>
+<body>
+    <div>
+        <h2>Contacto de {{ student.name }} {{ student.first_last_name }} {{ student.second_last_name }}</h2>
+        <table>
+            <tr>
+                <th>Teléfono</th>
+                <td>{{ contact.phone }}</td>
+            </tr>
+            <tr>
+                <th>Correo Electronico</th>
+                <td>{{ contact.email }}</td>
+            </tr>
+            <tr>
+                <th>Correo de UDG</th>
+                <td>{{ contact.udg_email }}</td>
+            </tr>
+            <tr>
+                <th>Teléfono de Emergencia</th>
+                <td>{{ contact.emergency_phone }}</td>
+            </tr>
+            <tr>
+                <th>Red social</th>
+                <td>
+                    {% if contact.url_socialnet %}
+                        <a href="{{ contact.url_socialnet }}">{{ contact.url_socialnet }}</a>
+                    {% else %}
+                        No disponible
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Compañia donde trabaja</th>
+                <td>{{ contact.company }}</td>
+            </tr>
+            <tr>
+                <th>Posición</th>
+                <td>{{ contact.position }}</td>
+            </tr>
+        </table>
+        <a href="{% url 'index' %}">Regresar a los contactos</a>
+    </div>
+</body>
+</html>

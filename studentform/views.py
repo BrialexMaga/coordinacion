@@ -24,6 +24,12 @@ def index(request):
     return render(request, "studentform/index.html", {'students':students, 'contacts':contacts, 
                                                       'cycles':cycles, 'careers':careers, 'statuses':statuses})
 
+def showContact(request, idStudent):
+    student = get_object_or_404(Student, pk=idStudent)
+    contact = student.contact
+
+    return render(request, 'studentform/student_contact.html', {'student': student, 'contact': contact})
+
 def createFormStudent(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
