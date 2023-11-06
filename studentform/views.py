@@ -7,6 +7,7 @@ from .factories import StudentFactory
 
 # Create your views here.
 from django.http import HttpResponse
+import csv
 
 def index(request):
     students = Student.objects.all()
@@ -23,6 +24,40 @@ def index(request):
 
     return render(request, "studentform/index.html", {'students':students, 'contacts':contacts, 
                                                       'cycles':cycles, 'careers':careers, 'statuses':statuses})
+
+def exportContacts(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="contacts.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Name', 
+                     'Given Name', 'Additional Name', 'Family Name', 
+                     'Yomi Name', 'Given Name Yomi', 'Additional Name Yomi', 'Family Name Yomi', 'Name Prefix', 
+                     'Name Suffix', 'Initials', 'Nickname', 'Short Name', 'Maiden Name', 
+                     'Birthday', 'Gender Location', 'Billing Information Directory Server',	'Mileage Occupation', 'Hobby', 
+                     'Sensitivity',	'Priority', 'Subject',	'Notes', 'Language', 'Photo',
+                     'Group Membership', 'E-mail 1 - Type', 'E-mail 1 - Value', 'E-mail 2 - Type', 'E-mail 2 - Value',
+                     'Phone 1 - Type', 'Phone 1 - Value', 'Phone 2 - Type', 'Phone 2 - Value', 'Organization 1 - Type', 
+                     'Organization 1 - Name', 'Organization 1 - Yomi Name', 'Organization 1 - Title', 'Organization 1 - Department', 'Organization 1 - Symbol',
+                     'Organization 1 - Location', 'Organization 1 - Job Description', 'Website 1 - Type', 'Website 1 - Value', 'Custom Field 1 - Type', 
+                     'Custom Field 1 - Value', 'Custom Field 2 - Type', 'Custom Field 2 - Value'])
+
+    contacts = Contact.objects.all()
+
+    for contact in contacts:
+        writer.writerow([f'{contact.idStudent.name} {contact.idStudent.first_last_name} {contact.idStudent.second_last_name}', 
+                         contact.idStudent.name, "", f'{contact.idStudent.first_last_name} {contact.idStudent.second_last_name}', 
+                         "", "", "", "", "",
+                         "", "", "", "", "",
+                         "", "", "", "", "",
+                         "", "", "", "", "", "",
+                         "", "Personal", contact.email, "UDG", contact.udg_email, 
+                         "Emergencia", contact.emergency_phone, "Personal", contact.phone,  "", 
+                         contact.company, "", contact.position, "", "",
+                         "", "", "Red Social", contact.url_socialnet, "Codigo Escolar", 
+                         contact.idStudent.code, "Estatus", contact.idStudent.status.status])
+
+    return response
 
 def showContact(request, idStudent):
     student = get_object_or_404(Student, pk=idStudent)

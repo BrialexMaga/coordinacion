@@ -10,6 +10,8 @@
 <body>
     <h1>Index</h1>
     <h2>Estudiantes</h2>
+    <a href="{% url 'export-contacts' %}"  class="btn btn-primary">Exportar Contactos</a>
+
     <form method="GET" action="{% url 'index' %}">
         <input type="text" name="code" placeholder="Buscar por código">
         <input type="text" name="name" placeholder="Buscar por nombre">
