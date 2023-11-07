@@ -38,13 +38,26 @@
             </tr>
             <tr>
                 <th>Compañia donde trabaja</th>
-                <td>{{ contact.company }}</td>
+                <td>
+                    {% if contact.company %}
+                        {{ contact.company }}
+                    {% else %}
+                        No disponible
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <th>Posición</th>
-                <td>{{ contact.position }}</td>
+                <td>
+                    {% if contact.position %}
+                        {{ contact.position }}
+                    {% else %}
+                        No disponible
+                    {% endif %}
+                </td>
             </tr>
         </table>
+        <a href="{% url 'export-student-contact' idStudent=student.idStudent %}"  class="btn btn-primary">Exportar Contacto</a>
         <a href="{% url 'index' %}">Regresar a los contactos</a>
     </div>
 </body>
