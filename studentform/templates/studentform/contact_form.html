@@ -1,17 +1,12 @@
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contacto</title>
-    <link rel="stylesheet" type="text/css" href="">
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Actualiza/Crea Contacto{% endblock %}
+
+{% block content %}
     <h2>Contacto para {{ student.name }}</h2>
     <form action="" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Guardar">
     </form>
-</body>
-</html>
+{% endblock %}

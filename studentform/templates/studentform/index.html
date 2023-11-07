@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Contactos{% endblock %}
+
+{% block content %}
     <h1>Index</h1>
     <h2>Estudiantes</h2>
     <a href="{% url 'export-contacts' %}"  class="btn btn-primary">Exportar Contactos</a>
@@ -17,7 +12,7 @@
         <input type="text" name="name" placeholder="Buscar por nombre">
         <button type="submit">Buscar</button>
     </form>
-      
+    
     <table>
         <thead>
             <th>id</th>
@@ -144,5 +139,4 @@
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+{% endblock %}
