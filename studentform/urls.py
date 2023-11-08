@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.index, name="index"),
+    path("", views.index, name="contacts"),
     path('export-contacts/', views.exportContacts, name='export-contacts'),
     path('contactform/<int:idStudent>/export/', views.exportStudentData, name='export-student-contact'),
 

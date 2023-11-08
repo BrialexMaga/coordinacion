@@ -119,7 +119,7 @@ def createFormStudent(request):
             # Factory
             callStudentFactory()
 
-            return redirect('index') # Put the name of the views in here to redirect.
+            return redirect('contacts') # Put the name of the views in here to redirect.
     else:
         form = StudentForm()
     
@@ -133,7 +133,7 @@ def createFormContact(request, idStudent):
         form = ContactForm(request.POST or None, instance=contact)
         if form.is_valid():
             form.save()
-            return redirect('index')
+            return redirect('contacts')
     else:
         form = ContactForm(instance=contact)
 
