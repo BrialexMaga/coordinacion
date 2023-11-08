@@ -3,5 +3,48 @@
 {% block title %}Mi aplicación{% endblock %}
 
 {% block content %}
-    <h1>I'm Alive</h1>
+    <div class="container">
+        <h1>Menú Central</h1>
+        <div class="row">
+            <!-- Opción 1 -->
+            <div class="col-md-3">
+                <a href="{% url 'contacts' %}">
+                    <div class="text-center">
+                        <i class="fas fa-icono1 fa-3x"></i>
+                    </div>
+                    <p class="text-center">Consultar Contactos</p>
+                </a>
+            </div>
+    
+            <!-- Opción 2 -->
+            <div class="col-md-3">
+                <a href=#>
+                    <div class="text-center">
+                        <i class="fas fa-icono2 fa-3x"></i>
+                    </div>
+                    <p class="text-center">Consultar Historial de Estudiante</p>
+                </a>
+            </div>
+    
+            <!-- Opción 3 -->
+            <div class="col-md-3">
+                <a href=#>
+                    <div class="text-center">
+                        <i class="fas fa-icono3 fa-3x"></i>
+                    </div>
+                    <p class="text-center">Estadisticas de Alumnos</p>
+                </a>
+            </div>
+    
+            <!-- Opción 4 -->
+            <div class="col-md-3">
+                <a href=#>
+                    <div class="text-center">
+                        <i class="fas fa-icono4 fa-3x"></i>
+                    </div>
+                    <p class="text-center">Indice de reprobados por materia</p>
+                </a>
+            </div>
+        </div>
+    </div>
 {% endblock %}
