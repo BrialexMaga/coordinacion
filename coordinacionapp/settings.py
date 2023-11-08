@@ -42,6 +42,7 @@ DJANGO_APPS = [
 ]
 
 MYAPPS = [
+    'landingpage',
     'studentform',
 ]
 
