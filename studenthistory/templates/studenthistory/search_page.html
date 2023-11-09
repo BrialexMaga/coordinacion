@@ -3,6 +3,10 @@
 {% block title %}Consultar Historial{% endblock %}
 
 {% block content %}
-    <h1>Search Bar in here</h1>
-    <a href="{% url 'show-history-page' %}">Consultar</a>
+    <h1>Consultar Estudiante</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Buscar</button>
+    </form>
 {% endblock %}

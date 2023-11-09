@@ -3,5 +3,29 @@
 {% block title %}Historial{% endblock %}
 
 {% block content %}
-    <h1>Show Student History here</h1>
+    <div>
+        <h2>Datos de Estudiante</h2>
+        <table>
+            <thead>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Estatus</th>
+                <th>Admisión</th>
+                <th>Ultimo Ciclo</th>
+                <th>Carrera</th>
+                <th>Riesgo de caer en articulo</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> {{ student.code }} </td>
+                    <td> {{ student.name }} {{ student.first_last_name }} {{ student.second_last_name }} </td>
+                    <td> {{ student.status.status }} </td>
+                    <td> {{ student.admission_cycle }} </td>
+                    <td> {{ student.last_cycle }} </td>
+                    <td> {{ student.idCareer.name }} </td>
+                    <td>Resultado IA</td>
+                <tr>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
