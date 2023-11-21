@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .forms import StudentCodeForm
 from studentform.models import Student
+import pickle
+import numpy as np
 
 def searchPage(request):
     if request.method == 'POST':
@@ -9,10 +11,30 @@ def searchPage(request):
             student_code = form.cleaned_data['student_code']
             try:
                 student = Student.objects.get(code=student_code)
-                return render(request, 'studenthistory/show_history.html', {'student': student})
+                prediction = predictRisk(student)
+
+                return render(request, 'studenthistory/show_history.html', {'student': student, 'prediction': prediction})
             except Student.DoesNotExist:
                 form.add_error('student_code', 'No se encontró ningún estudiante con este código.')
     else:
         form = StudentCodeForm()
 
     return render(request, 'studenthistory/search_page.html', {'form': form})
+
+def predictRisk(student):
+    model_path = 'IAmodels/IAmodel.pkl'
+    with open(model_path, 'rb') as model_file:
+        model = pickle.load(model_file)
+
+    # Supongamos que tienes un método para obtener el vector de características del estudiante
+    feature_vector = getFeatureVector(student)
+
+    # Realiza la predicción
+    #prediction = model.predict(np.array([feature_vector]))
+
+    # Devuelve la predicción (puedes ajustar esto según cómo esté estructurado tu modelo)
+    #return prediction[0]
+    return 0
+
+def getFeatureVector(student):
+    return 0
