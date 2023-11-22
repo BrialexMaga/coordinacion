@@ -28,4 +28,46 @@
             </tbody>
         </table>
     </div>
+
+    {% if False %}
+    <div>
+        <h2>En Articulo</h2>
+    </div>
+    {% endif %}
+
+    <div>
+        {% for cycle in cycles_list %}
+        <br>
+        <table>
+            <thead>
+                <th colspan="7">{{ cycle }}</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>NRC</td>
+                    <td>Clave</td>
+                    <td>Nombre de la Materia</td>
+                    <td>Calificación</td>
+                    <td>Tipo</td>
+                    <td>NC</td>
+                    <td>Fecha</td>
+                </tr>
+
+                {% for course in courses %}
+                    {% if course.school_cycle == cycle %}
+                        <tr>
+                            <td> {{ course.section.nrc }} </td>
+                            <td> {{ course.section.subject.key_subject }} </td>
+                            <td> {{ course.section.subject.name }} </td>
+                            <td> {{ course.grade }} </td>
+                            <td> {{ course.grade_period }} </td>
+                            <td> {{ course.section.subject.credits }} </td>
+                            <td> {{ course.upload_date }} </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+    </div>
 {% endblock %}

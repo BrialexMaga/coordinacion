@@ -9,7 +9,7 @@ class Subject(models.Model):
     credits = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.key_subject} - {self.name}"
 
 class Section(models.Model):
     idSection = models.AutoField(primary_key=True)
@@ -18,7 +18,7 @@ class Section(models.Model):
     section = models.CharField(max_length=5)
 
     def __str__(self):
-        return f"{self.section}"
+        return f"{self.section} - {self.subject}"
 
 class GradePeriod(models.Model):
     idGradePeriod = models.AutoField(primary_key=True)
