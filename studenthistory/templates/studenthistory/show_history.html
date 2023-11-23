@@ -36,6 +36,8 @@
     {% endif %}
 
     <div>
+        {{ len_list }}
+        {{ len_cycles }}
         {% for cycle in cycles_list %}
         <br>
         <table>
@@ -61,7 +63,11 @@
                             <td> {{ course.section.subject.name }} </td>
                             <td> {{ course.grade }} </td>
                             <td> {{ course.grade_period }} </td>
-                            <td> {{ course.section.subject.credits }} </td>
+                            {% if course.grade > 59 %}
+                                <td> {{ course.section.subject.credits }} </td>
+                            {% else %}
+                                <td> 0 </td>
+                            {% endif %}
                             <td> {{ course.upload_date }} </td>
                         </tr>
                     {% endif %}
