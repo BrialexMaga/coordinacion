@@ -13,7 +13,7 @@ def searchPage(request):
             student_code = form.cleaned_data['student_code']
             try:
                 student = Student.objects.get(code=student_code)
-                courses = Course.objects.filter(student=student).order_by('-school_cycle', 'section__subject__key_subject', 'grade_period')
+                courses = Course.objects.filter(student=student).order_by('-school_cycle__year', 'school_cycle__cycle_period', 'section__subject__key_subject', 'grade_period')
 
                 cycles_list = []
                 cycles_index_list = courses.values_list('school_cycle__idCycle', flat=True).distinct()
