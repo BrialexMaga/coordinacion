@@ -7,6 +7,7 @@ class Subject(models.Model):
     key_subject = models.CharField(max_length=7)
     name = models.CharField(max_length=50)
     credits = models.PositiveSmallIntegerField()
+    has_extraordinary = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.key_subject} - {self.name}"
