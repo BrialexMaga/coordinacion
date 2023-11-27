@@ -5,7 +5,7 @@ from studentform.models import School_Cycle, Student, Career
 class Subject(models.Model):
     idSubject = models.AutoField(primary_key=True)
     key_subject = models.CharField(max_length=7)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=80)
     credits = models.PositiveSmallIntegerField()
     has_extraordinary = models.BooleanField(default=True)
 
