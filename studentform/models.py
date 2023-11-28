@@ -46,7 +46,7 @@ class Student(models.Model):
                                  related_name='students')
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {self.first_last_name} {self.second_last_name}"
     
 class Contact(models.Model):
     idContact = models.BigAutoField(primary_key=True)
