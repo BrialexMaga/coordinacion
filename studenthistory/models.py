@@ -39,7 +39,7 @@ class Course(models.Model):
     upload_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.school_cycle} - {self.section}"
+        return f"{self.school_cycle} - {self.section} - {self.student}"
 
 class CareerSubject(models.Model):
     career = models.ForeignKey(Career, on_delete=models.CASCADE)
