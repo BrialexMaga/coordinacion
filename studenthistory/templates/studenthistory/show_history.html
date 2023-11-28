@@ -29,11 +29,33 @@
         </table>
     </div>
 
-    {% if False %}
+    <br>
+    {{ len_risk_subjects }} {{ risk_subjects }}
+    {% if len_risk_subjects > 0 %}
     <div>
-        <h2>En Articulo</h2>
+        <table>
+            <thead>
+                <th colspan="3">Materias en articulo</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Clave</td>
+                    <td>Nombre de la Materia</td>
+                    <td>NC</td>
+                </tr>
+
+                {% for course in risk_subjects %}
+                    <tr>
+                        <td> {{ course.key_subject }} </td>
+                        <td> {{ course.name }} </td>
+                        <td> {{ course.credits }} </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     {% endif %}
+    <br>
 
     <div>
         {{ len_list }}
