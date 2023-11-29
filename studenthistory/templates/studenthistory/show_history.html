@@ -44,11 +44,11 @@
                     <td>NC</td>
                 </tr>
 
-                {% for course in risk_subjects %}
+                {% for subject in risk_subjects %}
                     <tr>
-                        <td> {{ course.key_subject }} </td>
-                        <td> {{ course.name }} </td>
-                        <td> {{ course.credits }} </td>
+                        <td> {{ subject.key_subject }} </td>
+                        <td> {{ subject.name }} </td>
+                        <td> {{ subject.credits }} </td>
                     </tr>
                 {% endfor %}
             </tbody>

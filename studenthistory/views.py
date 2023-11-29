@@ -3,6 +3,10 @@ from .forms import StudentCodeForm
 from studentform.models import Student
 from .models import Course, School_Cycle, Subject
 from collections import OrderedDict
+
+from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
 import pickle
 import numpy as np
 
@@ -36,6 +40,12 @@ def searchPage(request):
 
     return render(request, 'studenthistory/search_page.html', {'form': form})
 
+
+
+
+
+
+
 def extractCycles(courses):
     cycles = []
     cycles_index_list = courses.values_list('school_cycle__idCycle', flat=True).distinct()
@@ -50,6 +60,7 @@ def extractRiskSubjects(courses, cycles, student):
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
     subjects_indexes = list(set(subject_indexes))
 
+    today_date = datetime.now().date()
     risk_courses = []
     for index in subjects_indexes:
         subject_registers = Course.objects.filter(student=student, 
@@ -57,11 +68,13 @@ def extractRiskSubjects(courses, cycles, student):
                                                                                                 'school_cycle__cycle_period', 
                                                                                                 'grade_period')
         subject_info = Subject.objects.get(idSubject=index)
+        
         if subject_info.has_extraordinary:
             ordinary = subject_registers.filter(grade_period__code_name = 'OE')
             extraordinary = subject_registers.filter(grade_period__code_name = 'E')
 
             if len(ordinary) > 1:
+                # Determine by secuence
                 if len(ordinary) == len(extraordinary):
                     last_extraordinary = extraordinary.last()
                     if last_extraordinary.grade < 60:
@@ -79,10 +92,31 @@ def extractRiskSubjects(courses, cycles, student):
                     else:
                         if last_ordinary.grade < 60:
                             risk_courses.append(subject_info)
+            else:
+                # Determine by one take and cycle
+                if len(extraordinary) > 0:
+                    last_extraordinary = extraordinary.last()
+                    #threshold = last_extraordinary.upload_date + relativedelta(months=5)
+                    threshold = last_extraordinary.upload_date + timedelta(days=1)
+                    if last_extraordinary.grade < 60:
+                        if last_extraordinary.school_cycle != student.last_cycle and threshold <= today_date:
+                            risk_courses.append(subject_info)
+                else:
+                    last_ordinary = ordinary.last()
+                    #threshold = last_ordinary.upload_date + relativedelta(months=5)
+                    threshold = last_ordinary.upload_date + timedelta(days=1)
+                    if last_ordinary.grade < 60:
+                        if last_ordinary.school_cycle != student.last_cycle and threshold <= today_date:
+                            risk_courses.append(subject_info)
+
         else:
             last_register = subject_registers.last()
+            #threshold = last_register + relativedelta(months=5)
+            threshold = last_register.upload_date + timedelta(days=1)
             if len(subject_registers) > 1 and last_register.grade < 60:
                 risk_courses.append(subject_info)
+            elif len(subject_registers) == 1 and last_register.grade < 60 and last_register.school_cycle != student.last_cycle and threshold <= today_date:
+                risk_courses.append(subject_info)                
     
     return risk_courses, len(risk_courses)
 
