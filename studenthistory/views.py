@@ -24,13 +24,15 @@ def searchPage(request):
                 cycles_list = extractCycles(courses)
                 risk_subjects, len_risk_subjects = extractRiskSubjects(courses, student)
                 total_credits, remaining_credits = extractCredits(courses, student)
+                average_score = extractAverageScore(courses)
+
                 prediction = predictRisk(student)
 
                 return render(request, 'studenthistory/show_history.html', 
                               {'student': student, 'prediction': prediction, 'courses': courses, 'cycles_list': cycles_list,
                                'risk_subjects': risk_subjects, #'len_list': len_list, 'len_cycles': len_cycles,
                                'len_risk_subjects': len_risk_subjects, 'career': career, 'total_credits': total_credits,
-                                'remaining_credits': remaining_credits})
+                               'remaining_credits': remaining_credits, 'average_score': average_score})
             except Student.DoesNotExist:
                 form.add_error('student_code', 'No se encontró ningún estudiante con este código.')
     else:
@@ -42,6 +44,19 @@ def searchPage(request):
 
 
 
+
+
+def extractAverageScore(courses):
+    divider = 0
+    score = 0
+    for course in courses:
+        if course.grade > 59:
+            score += course.grade
+            divider += 1
+    
+    average_score = score / divider
+
+    return average_score
 
 
 def extractCredits(courses, student):

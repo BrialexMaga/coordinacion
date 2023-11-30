@@ -13,6 +13,8 @@
                 <th>Admisión</th>
                 <th>Ultimo Ciclo</th>
                 <th>Carrera</th>
+                <th>Promedio</th>
+                <th>Creditos</th>
                 <th>Riesgo de caer en articulo</th>
             </thead>
             <tbody>
@@ -23,6 +25,8 @@
                     <td> {{ student.admission_cycle }} </td>
                     <td> {{ student.last_cycle }} </td>
                     <td> {{ student.idCareer.name }} </td>
+                    <td> {{ average_score }} </td>
+                    <td> {{ total_credits }} </td>
                     <td>Resultado IA: {{ prediction }} </td>
                 <tr>
             </tbody>
