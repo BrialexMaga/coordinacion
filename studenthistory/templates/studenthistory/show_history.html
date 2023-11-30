@@ -97,4 +97,29 @@
         </table>
         {% endfor %}
     </div>
+
+    <br>
+    <br>
+
+    <div>
+        <table>
+            <thead>
+                <th colspan=2>Resumen de créditos del alumno por área de estudios</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>CREDITOS REQUERIDOS DEL PROGRAMA:</td>
+                    <td> {{ career.needed_credits }} </td>
+                </tr>
+                <tr>
+                    <td>CREDITOS ADQUIRIDOS TOTALES:</td>
+                    <td> {{ total_credits }} </td>
+                </tr>
+                <tr>
+                    <td>CREDITOS FALTANTES:</td>
+                    <td> {{ remaining_credits }} </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

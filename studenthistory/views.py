@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .forms import StudentCodeForm
-from studentform.models import Student
+from studentform.models import Student, Career
 from .models import Course, School_Cycle, Subject
 from collections import OrderedDict
 
@@ -19,21 +19,18 @@ def searchPage(request):
                 student = Student.objects.get(code=student_code)
                 courses = Course.objects.filter(student=student).order_by('school_cycle__year', 'school_cycle__cycle_period', 
                                                                           'section__subject__key_subject', 'grade_period')
+                career = Career.objects.get(idCareer=student.idCareer.idCareer)
 
                 cycles_list = extractCycles(courses)
-                risk_subjects, len_risk_subjects = extractRiskSubjects(courses, cycles_list, student)
-                
-                # Medidas de listas
-                #len_list = len(courses)
-                #len_cycles = len(cycles_list)
-
-                # Call IA Model result
+                risk_subjects, len_risk_subjects = extractRiskSubjects(courses, student)
+                total_credits, remaining_credits = extractCredits(courses, student)
                 prediction = predictRisk(student)
 
                 return render(request, 'studenthistory/show_history.html', 
                               {'student': student, 'prediction': prediction, 'courses': courses, 'cycles_list': cycles_list,
                                'risk_subjects': risk_subjects, #'len_list': len_list, 'len_cycles': len_cycles,
-                               'len_risk_subjects': len_risk_subjects})
+                               'len_risk_subjects': len_risk_subjects, 'career': career, 'total_credits': total_credits,
+                                'remaining_credits': remaining_credits})
             except Student.DoesNotExist:
                 form.add_error('student_code', 'No se encontró ningún estudiante con este código.')
     else:
@@ -47,6 +44,17 @@ def searchPage(request):
 
 
 
+def extractCredits(courses, student):
+    total_credits = 0
+    for course in courses:
+        if course.grade > 59:
+            total_credits += course.section.subject.credits
+    
+    remaining_credits = abs(total_credits - student.idCareer.needed_credits)
+
+    return total_credits, remaining_credits
+
+
 def extractCycles(courses):
     cycles = []
     cycles_index_list = courses.values_list('school_cycle__idCycle', flat=True).distinct()
@@ -57,7 +65,7 @@ def extractCycles(courses):
     cycles = list(OrderedDict.fromkeys(cycles))
     return cycles
 
-def extractRiskSubjects(courses, cycles, student):
+def extractRiskSubjects(courses, student):
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
     subjects_indexes = list(set(subject_indexes))
 
@@ -121,6 +129,7 @@ def extractRiskSubjects(courses, cycles, student):
     
     return risk_courses, len(risk_courses)
 
+
 def predictRisk(student):
     model_path = 'IAmodels/IAmodel.pkl'
     with open(model_path, 'rb') as model_file:
@@ -135,6 +144,7 @@ def predictRisk(student):
     # Devuelve la predicción (puedes ajustar esto según cómo esté estructurado tu modelo)
     #return prediction[0]
     return 0
+
 
 def getFeatureVector(student):
     return 0
