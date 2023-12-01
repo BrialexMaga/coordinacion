@@ -38,6 +38,7 @@ class Student(models.Model):
 
     status = models.ForeignKey(Status, on_delete=models.PROTECT,
                                related_name='students')
+    exchange = models.BooleanField(default=False)
     admission_cycle = models.ForeignKey(School_Cycle, on_delete=models.PROTECT, 
                                         related_name='admission_cycle')
     last_cycle = models.ForeignKey(School_Cycle, on_delete=models.PROTECT, 
