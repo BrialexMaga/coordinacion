@@ -27,7 +27,13 @@
                     <td> {{ student.idCareer.name }} </td>
                     <td> {{ average_score }} </td>
                     <td> {{ total_credits }} </td>
-                    <td>Resultado IA: {{ prediction }} </td>
+                    {% if prediction < 3.34 %}
+                        <td> Bajo </td>
+                    {% elif prediction > 6.66 %}
+                        <td> Alto </td>
+                    {% else %}
+                        <td> Medio </td>
+                    {% endif %}
                 <tr>
             </tbody>
         </table>
