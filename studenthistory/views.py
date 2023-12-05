@@ -22,10 +22,12 @@ def searchPage(request):
                                                                           'section__subject__key_subject', 'grade_period')
                 career = Career.objects.get(idCareer=student.idCareer.idCareer)
 
-                cycles_list, semesters = extractCycles(courses, student)
+                has_courses = len(courses) > 0
+
+                cycles_list, semesters = extractCycles(courses, student, has_courses)
                 risk_subjects, len_risk_subjects = extractRiskSubjects(courses, student)
                 total_credits, remaining_credits = extractCredits(courses, student)
-                average_score = extractAverageScore(courses)
+                average_score = extractAverageScore(courses, has_courses)
 
                 prediction, vector = predictRisk(student, courses, career, total_credits, remaining_credits, average_score, semesters)
 
@@ -47,15 +49,17 @@ def searchPage(request):
 
 
 
-def extractAverageScore(courses):
-    divider = 0
-    score = 0
-    for course in courses:
-        if course.grade > 59:
-            score += course.grade
-            divider += 1
-    
-    average_score = score / divider
+def extractAverageScore(courses, has_courses):
+    average_score = 0
+    if has_courses:
+        divider = 0
+        score = 0
+        for course in courses:
+            if course.grade > 59:
+                score += course.grade
+                divider += 1
+        
+        average_score = score / divider
 
     return average_score
 
@@ -71,7 +75,7 @@ def extractCredits(courses, student):
     return total_credits, remaining_credits
 
 
-def extractCycles(courses, student):
+def extractCycles(courses, student, has_courses):
     cycles = []
     cycles_index_list = courses.values_list('school_cycle__idCycle', flat=True).distinct()
     for cycleId in cycles_index_list:
@@ -80,10 +84,13 @@ def extractCycles(courses, student):
 
     cycles = list(OrderedDict.fromkeys(cycles))
     semesters = len(cycles)
-    if cycles[-1] != student.last_cycle:
-        semesters += 1
+    if has_courses:
+        if cycles[-1] != student.last_cycle:
+            semesters += 1
+        
+        return cycles, semesters
 
-    return cycles, semesters
+    return cycles, 1
 
 def extractRiskSubjects(courses, student):
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
@@ -164,7 +171,6 @@ def predictRisk(student, courses, career, total_credits, remaining_credits, aver
 
 
 def getStudentVector(student, courses, career, accumulated_credits, missing_credits, average, semesters):
-    # Hacer pruebas en esta función. Asegurarse que no explota el programa
     vectorMaxSubjects = 75   # No. Columns related to subjects
 
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
