@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from .forms import StudentCodeForm
 from studentform.models import Student, Career
-from .models import Course, School_Cycle, Subject
+from .models import Course, School_Cycle, Subject, CareerSubject
 from collections import OrderedDict
 
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 import pickle
+import pandas as pd
 import numpy as np
 
 def searchPage(request):
@@ -21,16 +22,16 @@ def searchPage(request):
                                                                           'section__subject__key_subject', 'grade_period')
                 career = Career.objects.get(idCareer=student.idCareer.idCareer)
 
-                cycles_list = extractCycles(courses)
+                cycles_list, semesters = extractCycles(courses, student)
                 risk_subjects, len_risk_subjects = extractRiskSubjects(courses, student)
                 total_credits, remaining_credits = extractCredits(courses, student)
                 average_score = extractAverageScore(courses)
 
-                prediction = predictRisk(student)
+                prediction, vector = predictRisk(student, courses, career, total_credits, remaining_credits, average_score, semesters)
 
                 return render(request, 'studenthistory/show_history.html', 
                               {'student': student, 'prediction': prediction, 'courses': courses, 'cycles_list': cycles_list,
-                               'risk_subjects': risk_subjects, #'len_list': len_list, 'len_cycles': len_cycles,
+                               'risk_subjects': risk_subjects, 'vector': vector, #'len_list': len_list, 'len_cycles': len_cycles,
                                'len_risk_subjects': len_risk_subjects, 'career': career, 'total_credits': total_credits,
                                'remaining_credits': remaining_credits, 'average_score': average_score})
             except Student.DoesNotExist:
@@ -70,7 +71,7 @@ def extractCredits(courses, student):
     return total_credits, remaining_credits
 
 
-def extractCycles(courses):
+def extractCycles(courses, student):
     cycles = []
     cycles_index_list = courses.values_list('school_cycle__idCycle', flat=True).distinct()
     for cycleId in cycles_index_list:
@@ -78,7 +79,11 @@ def extractCycles(courses):
         cycles.append(cycle)
 
     cycles = list(OrderedDict.fromkeys(cycles))
-    return cycles
+    semesters = len(cycles)
+    if cycles[-1] != student.last_cycle:
+        semesters += 1
+
+    return cycles, semesters
 
 def extractRiskSubjects(courses, student):
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
@@ -145,21 +150,102 @@ def extractRiskSubjects(courses, student):
     return risk_courses, len(risk_courses)
 
 
-def predictRisk(student):
+def predictRisk(student, courses, career, total_credits, remaining_credits, average, semesters):
     model_path = 'IAmodels/IAmodel.pkl'
     with open(model_path, 'rb') as model_file:
         model = pickle.load(model_file)
 
-    # Supongamos que tienes un método para obtener el vector de características del estudiante
-    feature_vector = getFeatureVector(student)
+    student_vector = getStudentVector(student, courses, career, total_credits, remaining_credits, average, semesters)
 
-    # Realiza la predicción
-    #prediction = model.predict(np.array([feature_vector]))
+    prediction_prob = model.predict_proba(student_vector)
+    risk_student_prob = prediction_prob[0][0]
 
-    # Devuelve la predicción (puedes ajustar esto según cómo esté estructurado tu modelo)
-    #return prediction[0]
-    return 0
+    return risk_student_prob, student_vector
 
 
-def getFeatureVector(student):
-    return 0
+def getStudentVector(student, courses, career, accumulated_credits, missing_credits, average, semesters):
+    # Hacer pruebas en esta función. Asegurarse que no explota el programa
+    vectorMaxSubjects = 75   # No. Columns related to subjects
+
+    subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
+    subjects_indexes = list(set(subject_indexes))
+    if len(subjects_indexes) > vectorMaxSubjects:
+        subjects_indexes = subjects_indexes[:75]
+
+    def statusCheck(student):
+        if student.status.code_name in ['AC', 'AI', 'EG', 'ES', 'FI', 'IN', 'GD', 'PP', 'PS', 'PT', 'SS', 'ST', 'TT', 'XI']:
+            return 1
+        
+        return 0
+    
+    # Fill student info
+    data = {
+        'status': statusCheck(student),
+        'exchange': int(student.exchange),
+        'semesters': semesters,
+        'accumulated_credits': accumulated_credits,
+        'missing_credits': missing_credits,
+        'average': average,
+    }
+
+    # Fill taken subjects info
+    has_practices = False
+    i = 0
+    for index in subjects_indexes:
+        subject_info = Subject.objects.get(idSubject=index)
+        subject_coursed = courses.filter(section__subject__idSubject=index).order_by('school_cycle__year', 
+                                                                                     'school_cycle__cycle_period',
+                                                                                     'grade_period')
+
+        ordinary = subject_coursed.filter(grade_period__code_name = 'OE')
+        extraordinary = subject_coursed.filter(grade_period__code_name = 'E')
+
+        if subject_info.name == 'Practicas Profesionales':
+            has_practices = True
+        else:
+            if len(extraordinary) > 0:
+                last_ordinary = ordinary.last()
+                last_extraordinary = extraordinary.last()
+
+                if len(ordinary) == len(extraordinary):
+                    if last_extraordinary.grade > 59:
+                        data['subject' + str(i)] = len(ordinary)
+                    else:
+                        data['subject' + str(i)] = -1
+                else:
+                    if last_ordinary.school_cycle == last_extraordinary.school_cycle:
+                        if last_extraordinary.grade > 59:
+                            data['subject' + str(i)] = len(ordinary)
+                        else:
+                            data['subject' + str(i)] = -1
+                    else:
+                        if last_ordinary.grade > 59:
+                            data['subject' + str(i)] = len(ordinary)
+                        else:
+                            data['subject' + str(i)] = -1
+            else:
+                last_ordinary = ordinary.last()
+                if last_ordinary.grade > 59:
+                    data['subject' + str(i)] = len(ordinary)
+                else:
+                    data['subject' + str(i)] = -1
+        
+        i += 1
+
+    # Finish to fill the columns related to subjects
+    while(i < vectorMaxSubjects):
+        data['subject' + str(i)] = 0
+        i += 1
+
+    # Finish putting if he has practices or not
+    data['practices'] = int(has_practices)
+
+    # Converts the dictionary into a dataframe
+    df = pd.DataFrame([data])
+
+    # Converts the df into a numpy array
+    student_vector = np.array(df.iloc[0])
+    student_vector = student_vector[1:]     # Descart prediction variable Y
+    student_vector = np.array(student_vector).reshape(1, -1)
+        
+    return student_vector
