@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Historial{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>Datos de Estudiante</h2>
+        <table>
+            <thead>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Estatus</th>
+                <th>Admisión</th>
+                <th>Ultimo Ciclo</th>
+                <th>Carrera</th>
+                <th>Promedio</th>
+                <th>Creditos</th>
+                <th>Riesgo de caer en articulo</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> {{ student.code }} </td>
+                    <td> {{ student.name }} {{ student.first_last_name }} {{ student.second_last_name }} </td>
+                    <td> {{ student.status.status }} </td>
+                    <td> {{ student.admission_cycle }} </td>
+                    <td> {{ student.last_cycle }} </td>
+                    <td> {{ student.idCareer.name }} </td>
+                    <td> {{ average_score }} </td>
+                    <td> {{ total_credits }} </td>
+                    {% if prediction < 3.34 %}
+                        <td> Bajo </td>
+                    {% elif prediction > 6.66 %}
+                        <td> Alto </td>
+                    {% else %}
+                        <td> Medio </td>
+                    {% endif %}
+                <tr>
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+    {% if len_risk_subjects > 0 %}
+    <div>
+        <table>
+            <thead>
+                <th colspan="3">Materias en articulo</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Clave</td>
+                    <td>Nombre de la Materia</td>
+                    <td>NC</td>
+                </tr>
+
+                {% for subject in risk_subjects %}
+                    <tr>
+                        <td> {{ subject.key_subject }} </td>
+                        <td> {{ subject.name }} </td>
+                        <td> {{ subject.credits }} </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    <br>
+
+    <div>
+        {{ len_list }}
+        {{ len_cycles }}
+        {% for cycle in cycles_list %}
+        <br>
+        <table>
+            <thead>
+                <th colspan="7">{{ cycle }}</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>NRC</td>
+                    <td>Clave</td>
+                    <td>Nombre de la Materia</td>
+                    <td>Calificación</td>
+                    <td>Tipo</td>
+                    <td>NC</td>
+                    <td>Fecha</td>
+                </tr>
+
+                {% for course in courses %}
+                    {% if course.school_cycle == cycle %}
+                        <tr>
+                            <td> {{ course.section.nrc }} </td>
+                            <td> {{ course.section.subject.key_subject }} </td>
+                            <td> {{ course.section.subject.name }} </td>
+                            <td> {{ course.grade }} </td>
+                            <td> {{ course.grade_period }} </td>
+                            {% if course.grade > '59'%}
+                                <td> {{ course.section.subject.credits }} </td>
+                            {% else %}
+                                <td> 0 </td>
+                            {% endif %}
+                            <td> {{ course.upload_date }} </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+    </div>
+
+    <br>
+    <br>
+
+    <div>
+        <table>
+            <thead>
+                <th colspan=2>Resumen de créditos del alumno por área de estudios</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>CREDITOS REQUERIDOS DEL PROGRAMA:</td>
+                    <td> {{ career.needed_credits }} </td>
+                </tr>
+                <tr>
+                    <td>CREDITOS ADQUIRIDOS TOTALES:</td>
+                    <td> {{ total_credits }} </td>
+                </tr>
+                <tr>
+                    <td>CREDITOS FALTANTES:</td>
+                    <td> {{ remaining_credits }} </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
