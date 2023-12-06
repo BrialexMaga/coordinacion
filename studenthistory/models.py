@@ -34,7 +34,7 @@ class Course(models.Model):
     school_cycle = models.ForeignKey(School_Cycle, on_delete=models.PROTECT)
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
     section = models.ForeignKey(Section, on_delete=models.PROTECT)
-    grade = models.PositiveSmallIntegerField(validators=[MaxValueValidator(100)])
+    grade = models.CharField(max_length=5)
     grade_period = models.ForeignKey(GradePeriod, on_delete=models.PROTECT)
     upload_date = models.DateField(auto_now_add=True)
 
