@@ -49,14 +49,29 @@ def searchPage(request):
 
 
 
+def gradeConverter(string):
+    is_SD = False
+
+    if string.upper() == 'SD':
+        is_SD = True
+        grade = 0
+    else:
+        try:
+            grade = int(string)
+        except ValueError:
+            raise ValueError("La calificación no es válida. Debe ser 'SD' o un número entre 0 y 100.")
+
+    return grade, is_SD
+
 def extractAverageScore(courses, has_courses):
     average_score = 0
     if has_courses:
         divider = 0
         score = 0
         for course in courses:
-            if course.grade > 59:
-                score += course.grade
+            grade, is_SD = gradeConverter(course.grade)
+            if not is_SD and grade > 59:
+                score += grade
                 divider += 1
         
         average_score = score / divider
@@ -67,7 +82,8 @@ def extractAverageScore(courses, has_courses):
 def extractCredits(courses, student):
     total_credits = 0
     for course in courses:
-        if course.grade > 59:
+        grade, is_SD = gradeConverter(course.grade)
+        if not is_SD and grade > 59:
             total_credits += course.section.subject.credits
     
     remaining_credits = abs(total_credits - student.idCareer.needed_credits)
@@ -113,20 +129,24 @@ def extractRiskSubjects(courses, student):
                 # Determine by secuence
                 if len(ordinary) == len(extraordinary):
                     last_extraordinary = extraordinary.last()
-                    if last_extraordinary.grade < 60:
+                    grade, is_SD = gradeConverter(last_extraordinary.grade)
+                    if is_SD or grade < 60:
                         risk_courses.append(subject_info)
                 else:
                     last_ordinary = ordinary.last()
                     if len(extraordinary) > 0:
                         last_extraordinary = extraordinary.last()
                         if last_ordinary.school_cycle == last_extraordinary.school_cycle:
-                            if last_extraordinary.grade < 60:
+                            grade, is_SD = gradeConverter(last_extraordinary.grade)
+                            if is_SD or grade < 60:
                                 risk_courses.append(subject_info)
                         else:
-                            if last_ordinary.grade < 60:
+                            grade, is_SD = gradeConverter(last_ordinary.grade)
+                            if is_SD or grade < 60:
                                 risk_courses.append(subject_info)
                     else:
-                        if last_ordinary.grade < 60:
+                        grade, is_SD = gradeConverter(last_ordinary.grade)
+                        if is_SD or grade < 60:
                             risk_courses.append(subject_info)
             else:
                 # Determine by one take and cycle
@@ -134,14 +154,16 @@ def extractRiskSubjects(courses, student):
                     last_extraordinary = extraordinary.last()
                     threshold = last_extraordinary.upload_date + relativedelta(months=5)
                     #threshold = last_extraordinary.upload_date + timedelta(days=1)
-                    if last_extraordinary.grade < 60:
+                    grade, is_SD = gradeConverter(last_extraordinary.grade)
+                    if is_SD or grade < 60:
                         if last_extraordinary.school_cycle != student.last_cycle and threshold <= today_date:
                             risk_courses.append(subject_info)
                 else:
                     last_ordinary = ordinary.last()
                     threshold = last_ordinary.upload_date + relativedelta(months=5)
                     #threshold = last_ordinary.upload_date + timedelta(days=1)
-                    if last_ordinary.grade < 60:
+                    grade, is_SD = gradeConverter(last_ordinary.grade)
+                    if is_SD or grade < 60:
                         if last_ordinary.school_cycle != student.last_cycle and threshold <= today_date:
                             risk_courses.append(subject_info)
 
@@ -149,9 +171,10 @@ def extractRiskSubjects(courses, student):
             last_register = subject_registers.last()
             threshold = last_register.upload_date + relativedelta(months=5)
             #threshold = last_register.upload_date + timedelta(days=1)
-            if len(subject_registers) > 1 and last_register.grade < 60:
+            grade, is_SD = gradeConverter(last_register.grade)
+            if len(subject_registers) > 1 and (is_SD or grade < 60):
                 risk_courses.append(subject_info)
-            elif len(subject_registers) == 1 and last_register.grade < 60 and last_register.school_cycle != student.last_cycle and threshold <= today_date:
+            elif len(subject_registers) == 1 and (is_SD or grade < 60) and last_register.school_cycle != student.last_cycle and threshold <= today_date:
                 risk_courses.append(subject_info)                
     
     return risk_courses, len(risk_courses)
@@ -212,26 +235,29 @@ def getStudentVector(student, courses, career, accumulated_credits, missing_cred
         if len(extraordinary) > 0 and subject_info.name != 'PRACTICAS PROFESIONALES':
             last_ordinary = ordinary.last()
             last_extraordinary = extraordinary.last()
+            extraordinary_grade, is_SD = gradeConverter(last_extraordinary.grade)
+            ordinary_grade, is_SD = gradeConverter(last_ordinary.grade)
 
             if len(ordinary) == len(extraordinary):
-                if last_extraordinary.grade > 59:
+                if not is_SD and extraordinary_grade > 59:
                     data['subject' + str(i)] = len(ordinary)
                 else:
                     data['subject' + str(i)] = -1
             else:
                 if last_ordinary.school_cycle == last_extraordinary.school_cycle:
-                    if last_extraordinary.grade > 59:
+                    if not is_SD and extraordinary_grade > 59:
                         data['subject' + str(i)] = len(ordinary)
                     else:
                         data['subject' + str(i)] = -1
                 else:
-                    if last_ordinary.grade > 59:
+                    if not is_SD and ordinary_grade > 59:
                         data['subject' + str(i)] = len(ordinary)
                     else:
                         data['subject' + str(i)] = -1
         else:
             last_ordinary = ordinary.last()
-            if last_ordinary.grade > 59:
+            ordinary_grade, is_SD = gradeConverter(last_ordinary.grade)
+            if not is_SD and ordinary_grade > 59:
                 data['subject' + str(i)] = len(ordinary)
             else:
                 data['subject' + str(i)] = -1

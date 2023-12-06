@@ -94,7 +94,7 @@
                             <td> {{ course.section.subject.name }} </td>
                             <td> {{ course.grade }} </td>
                             <td> {{ course.grade_period }} </td>
-                            {% if course.grade > 59 %}
+                            {% if course.grade > '59'%}
                                 <td> {{ course.section.subject.credits }} </td>
                             {% else %}
                                 <td> 0 </td>
