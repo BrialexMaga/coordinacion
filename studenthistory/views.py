@@ -33,7 +33,7 @@ def searchPage(request):
 
                 return render(request, 'studenthistory/show_history.html', 
                               {'student': student, 'prediction': prediction, 'courses': courses, 'cycles_list': cycles_list,
-                               'risk_subjects': risk_subjects, 'vector': vector, #'len_list': len_list, 'len_cycles': len_cycles,
+                               'risk_subjects': risk_subjects, 'vector': vector,  #'len_list': len_list, 'len_cycles': len_cycles,
                                'len_risk_subjects': len_risk_subjects, 'career': career, 'total_credits': total_credits,
                                'remaining_credits': remaining_credits, 'average_score': average_score})
             except Student.DoesNotExist:
@@ -206,36 +206,36 @@ def getStudentVector(student, courses, career, accumulated_credits, missing_cred
         ordinary = subject_coursed.filter(grade_period__code_name = 'OE')
         extraordinary = subject_coursed.filter(grade_period__code_name = 'E')
 
-        if subject_info.name == 'Practicas Profesionales':
+        if subject_info.name == 'PRACTICAS PROFESIONALES':
             has_practices = True
-        else:
-            if len(extraordinary) > 0:
-                last_ordinary = ordinary.last()
-                last_extraordinary = extraordinary.last()
 
-                if len(ordinary) == len(extraordinary):
+        if len(extraordinary) > 0 and subject_info.name != 'PRACTICAS PROFESIONALES':
+            last_ordinary = ordinary.last()
+            last_extraordinary = extraordinary.last()
+
+            if len(ordinary) == len(extraordinary):
+                if last_extraordinary.grade > 59:
+                    data['subject' + str(i)] = len(ordinary)
+                else:
+                    data['subject' + str(i)] = -1
+            else:
+                if last_ordinary.school_cycle == last_extraordinary.school_cycle:
                     if last_extraordinary.grade > 59:
                         data['subject' + str(i)] = len(ordinary)
                     else:
                         data['subject' + str(i)] = -1
                 else:
-                    if last_ordinary.school_cycle == last_extraordinary.school_cycle:
-                        if last_extraordinary.grade > 59:
-                            data['subject' + str(i)] = len(ordinary)
-                        else:
-                            data['subject' + str(i)] = -1
+                    if last_ordinary.grade > 59:
+                        data['subject' + str(i)] = len(ordinary)
                     else:
-                        if last_ordinary.grade > 59:
-                            data['subject' + str(i)] = len(ordinary)
-                        else:
-                            data['subject' + str(i)] = -1
+                        data['subject' + str(i)] = -1
+        else:
+            last_ordinary = ordinary.last()
+            if last_ordinary.grade > 59:
+                data['subject' + str(i)] = len(ordinary)
             else:
-                last_ordinary = ordinary.last()
-                if last_ordinary.grade > 59:
-                    data['subject' + str(i)] = len(ordinary)
-                else:
-                    data['subject' + str(i)] = -1
-        
+                data['subject' + str(i)] = -1
+    
         i += 1
 
     # Finish to fill the columns related to subjects
