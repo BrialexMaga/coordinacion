@@ -4,5 +4,9 @@
 
 {% block content %}
     <h2>Estadisticas de Alumnos</h2>
-    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Consultar</button>
+    </form>
 {% endblock %}
