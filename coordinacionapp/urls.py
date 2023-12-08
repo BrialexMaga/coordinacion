@@ -21,5 +21,6 @@ urlpatterns = [
     path('', include('landingpage.urls')),
     path("contacts/", include("studentform.urls")),
     path("student_history/", include("studenthistory.urls")),
+    path("student_statistics/", include("studentStatistics.urls")),
     path('admin/', admin.site.urls),
 ]
