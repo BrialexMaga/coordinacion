@@ -10,6 +10,7 @@
             <th>Generación</th>
             <th>Semestres</th>
             <th>No. Alumnos</th>
+            <th>No. Alumnos que pertenecen</th>
             <th>%</th>
             <th>No. Egresados</th>
             <th>%</th>
@@ -21,15 +22,16 @@
         <tbody>
             <tr>
                 <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
-                <td> {{ cycle }} </td>
+                <td> {{ semesters }} </td>
+                <td> {{ no_students }} </td>
+                <td> ¿Como calculo un alumno siguiendo la malla? </td>
+                <td> Nothing </td>
+                <td> {{ no_finished_students }} </td>
+                <td> {{ finish_percent }}% </td>
+                <td> {{ no_graduated }} </td>
+                <td> {{ graduated_percent }}% </td>
+                <td> {{ no_art33 }} </td>
+                <td> {{ no_art35 }} </td>
             </tr>
         </tbody>
     </table>
