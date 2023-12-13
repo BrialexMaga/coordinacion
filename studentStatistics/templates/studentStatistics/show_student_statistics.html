@@ -38,6 +38,13 @@
 
     <br><br>
 
+    <form method="GET" action="{% url 'show-statistics' cycle.idCycle %}">
+        <input type="text" name="status" placeholder="Buscar por estatus">
+        <input type="text" name="last_cycle" placeholder="Buscar por ultimo ciclo">
+    
+        <button type="submit">Buscar</button>
+    </form>
+
     <table>
         <thead>
             <th>id</th>
@@ -57,7 +64,7 @@
                     <td>{{ student.status.status }}</td>
                     <td>{{ student.admission_cycle }} </td>
                     <td>{{ student.last_cycle }} </td>
-                    <td> Calcula Semestres </td>
+                    <td> {{ semesters_list|slice:forloop.counter|last }} </td>
                 </tr>
             {% endfor %}
         </tbody>
