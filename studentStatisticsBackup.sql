@@ -947,17 +947,6 @@ COPY public.studentform_career ("idCareer", code_name, name, needed_credits, sem
 \.
 
 
---
--- Data for Name: studentform_contact; Type: TABLE DATA; Schema: public; Owner: django
---
-
-COPY public.studentform_contact ("idContact", phone, email, udg_email, emergency_phone, url_socialnet, "idStudent_id", company, "position") FROM stdin;
-4	001-443-761-5558x832	ravenayers@example.org	oclark@example.org	001-695-491-7764x440	\N	4	\N	\N
-3	001-522-572-4830	mjones@example.org	mckayelizabeth@example.net	938.972.8989x18998	https://google.com	3	\N	\N
-2	(846)449-1500x2638	brodriguez@example.org	alexisleonard@example.net	920-965-4055x2754	https://facebook.com	2	Oracle	Software Developer
-1	753-640-3489	joshuazuniga@example.net	kingdavid@example.org	588.550.3845	https://x.com	1	San Mina	Minero2
-\.
-
 
 --
 -- Data for Name: studentform_school_cycle; Type: TABLE DATA; Schema: public; Owner: django
@@ -999,6 +988,63 @@ COPY public.studentform_student ("idStudent", code, name, status_id, admission_c
 
 
 --
+-- Data for Name: studentform_contact; Type: TABLE DATA; Schema: public; Owner: django
+--
+
+COPY public.studentform_contact ("idContact", phone, email, udg_email, emergency_phone, url_socialnet, "idStudent_id", company, "position") FROM stdin;
+4	001-443-761-5558x832	ravenayers@example.org	oclark@example.org	001-695-491-7764x440	\N	4	\N	\N
+3	001-522-572-4830	mjones@example.org	mckayelizabeth@example.net	938.972.8989x18998	https://google.com	3	\N	\N
+2	(846)449-1500x2638	brodriguez@example.org	alexisleonard@example.net	920-965-4055x2754	https://facebook.com	2	Oracle	Software Developer
+1	753-640-3489	joshuazuniga@example.net	kingdavid@example.org	588.550.3845	https://x.com	1	San Mina	Minero2
+\.
+
+
+
+--
+-- Data for Name: studenthistory_subject; Type: TABLE DATA; Schema: public; Owner: django
+--
+
+COPY public.studenthistory_subject ("idSubject", key_subject, name, credits, has_extraordinary) FROM stdin;
+1	I5884	ALGORITMIA	8	t
+2	I7022	FUNDAMENTOS FILOSOFICOS DE LA COMPUTACION	8	t
+3	I6123	INTRODUCCION A LA FISICA	7	t
+5	I5893	METODOS MATEMATICOS I	8	t
+7	I5882	PROGRAMACION	8	t
+8	I7023	ARQUITECTURA DE COMPUTADORAS	8	t
+9	I5895	METODOS MATEMATICOS II	8	t
+6	I5894	SEMINARIO DE SOLUCION DE PROBLEMAS DE METODOS MATEMATICOS I	5	f
+4	I5892	MATEMATICA DISCRETA	8	t
+10	I7365	PSICOLOGÍA INDUSTRIAL	7	t
+11	I7367	TALLER DE REDACCIÓN TÉCNICA	4	t
+12	I7356	QUÍMICA BÁSICA	8	t
+13	I7391	DISEÑO ASISTIDO POR COMPUTADORA	3	t
+14	I7393	GESTIÓN AMBIENTAL	7	t
+15	I7370	ADMINISTRACIÓN	7	t
+16	I7340	INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL	7	t
+17	I7344	CÁLCULO DIFERENCIAL	7	t
+18	I7349	INTRODUCCIÓN A LAS MATEMÁTICAS DISCRETAS	7	t
+19	PRACT	PRACTICAS PROFESIONALES	20	t
+\.
+
+
+--
+-- Data for Name: studenthistory_section; Type: TABLE DATA; Schema: public; Owner: django
+--
+
+COPY public.studenthistory_section ("idSection", nrc, section, subject_id) FROM stdin;
+1	54123	D01	1
+2	53217	D03	2
+3	10375	D03	1
+4	94781	D07	3
+5	091795	D02	7
+6	086896	D09	8
+7	17354	D01	6
+8	1234512	D01	19
+\.
+
+
+
+--
 -- Data for Name: studenthistory_careersubject; Type: TABLE DATA; Schema: public; Owner: django
 --
 
@@ -1022,6 +1068,18 @@ COPY public.studenthistory_careersubject (id, career_id, subject_id) FROM stdin;
 17	2	17
 18	2	18
 \.
+
+
+
+--
+-- Data for Name: studenthistory_gradeperiod; Type: TABLE DATA; Schema: public; Owner: django
+--
+
+COPY public.studenthistory_gradeperiod ("idGradePeriod", code_name, grade_period) FROM stdin;
+2	OE	ORDINARIO
+3	E	EXTRAORDINARIO
+\.
+
 
 
 --
@@ -1060,58 +1118,6 @@ COPY public.studenthistory_course ("idCourse", grade, upload_date, grade_period_
 3	60	2023-11-22	3	1	4	1
 \.
 
-
---
--- Data for Name: studenthistory_gradeperiod; Type: TABLE DATA; Schema: public; Owner: django
---
-
-COPY public.studenthistory_gradeperiod ("idGradePeriod", code_name, grade_period) FROM stdin;
-2	OE	ORDINARIO
-3	E	EXTRAORDINARIO
-\.
-
-
---
--- Data for Name: studenthistory_section; Type: TABLE DATA; Schema: public; Owner: django
---
-
-COPY public.studenthistory_section ("idSection", nrc, section, subject_id) FROM stdin;
-1	54123	D01	1
-2	53217	D03	2
-3	10375	D03	1
-4	94781	D07	3
-5	091795	D02	7
-6	086896	D09	8
-7	17354	D01	6
-8	1234512	D01	19
-\.
-
-
---
--- Data for Name: studenthistory_subject; Type: TABLE DATA; Schema: public; Owner: django
---
-
-COPY public.studenthistory_subject ("idSubject", key_subject, name, credits, has_extraordinary) FROM stdin;
-1	I5884	ALGORITMIA	8	t
-2	I7022	FUNDAMENTOS FILOSOFICOS DE LA COMPUTACION	8	t
-3	I6123	INTRODUCCION A LA FISICA	7	t
-5	I5893	METODOS MATEMATICOS I	8	t
-7	I5882	PROGRAMACION	8	t
-8	I7023	ARQUITECTURA DE COMPUTADORAS	8	t
-9	I5895	METODOS MATEMATICOS II	8	t
-6	I5894	SEMINARIO DE SOLUCION DE PROBLEMAS DE METODOS MATEMATICOS I	5	f
-4	I5892	MATEMATICA DISCRETA	8	t
-10	I7365	PSICOLOGÍA INDUSTRIAL	7	t
-11	I7367	TALLER DE REDACCIÓN TÉCNICA	4	t
-12	I7356	QUÍMICA BÁSICA	8	t
-13	I7391	DISEÑO ASISTIDO POR COMPUTADORA	3	t
-14	I7393	GESTIÓN AMBIENTAL	7	t
-15	I7370	ADMINISTRACIÓN	7	t
-16	I7340	INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL	7	t
-17	I7344	CÁLCULO DIFERENCIAL	7	t
-18	I7349	INTRODUCCIÓN A LAS MATEMÁTICAS DISCRETAS	7	t
-19	PRACT	PRACTICAS PROFESIONALES	20	t
-\.
 
 
 --
