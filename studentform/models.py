@@ -15,8 +15,6 @@ class Career(models.Model):
     idCareer = models.AutoField(primary_key=True)
     code_name = models.CharField(max_length=5)
     name = models.CharField(max_length=100)
-    needed_credits = models.PositiveSmallIntegerField()
-    semesters = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return self.code_name
@@ -28,6 +26,24 @@ class Status(models.Model):
 
     def __str__(self):
         return self.code_name
+    
+class Syllabus(models.Model):
+    idSyllabus = models.AutoField(primary_key=True)
+    career = models.ForeignKey(Career, on_delete=models.PROTECT)
+    name = models.CharField(max_length=45)
+    semesters = models.PositiveSmallIntegerField()
+    needed_credits = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return f"{self.career} - Plan {self.name}"
+
+class Semester(models.Model):
+    idSemester = models.AutoField(primary_key=True)
+    syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE)
+    number = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return f"{self.syllabus.career} - Semestre {self.number}"
     
 class Student(models.Model):
     idStudent = models.BigAutoField(primary_key=True)
@@ -45,6 +61,7 @@ class Student(models.Model):
                                    related_name='last_cycle')
     idCareer = models.ForeignKey(Career, on_delete=models.PROTECT,
                                  related_name='students')
+    syllabus = models.ForeignKey(Syllabus, on_delete=models.PROTECT, null=True)
 
     def __str__(self):
         return f"{self.name} {self.first_last_name} {self.second_last_name}"
