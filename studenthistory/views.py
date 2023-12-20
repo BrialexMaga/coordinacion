@@ -34,7 +34,7 @@ def searchPage(request):
                 return render(request, 'studenthistory/show_history.html', 
                               {'student': student, 'prediction': prediction, 'courses': courses, 'cycles_list': cycles_list,
                                'risk_subjects': risk_subjects, 'vector': vector,  #'len_list': len_list, 'len_cycles': len_cycles,
-                               'len_risk_subjects': len_risk_subjects, 'career': career, 'total_credits': total_credits,
+                               'len_risk_subjects': len_risk_subjects, 'syllabus': student.syllabus, 'total_credits': total_credits,
                                'remaining_credits': remaining_credits, 'average_score': average_score})
             except Student.DoesNotExist:
                 form.add_error('student_code', 'No se encontró ningún estudiante con este código.')
@@ -86,7 +86,7 @@ def extractCredits(courses, student):
         if not is_SD and grade > 59:
             total_credits += course.section.subject.credits
     
-    remaining_credits = abs(total_credits - student.idCareer.needed_credits)
+    remaining_credits = abs(total_credits - student.syllabus.needed_credits)
 
     return total_credits, remaining_credits
 
