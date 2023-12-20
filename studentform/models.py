@@ -36,10 +36,21 @@ class Syllabus(models.Model):
 
     def __str__(self):
         return f"{self.career} - Plan {self.name}"
+    
+class Subject(models.Model):
+    idSubject = models.AutoField(primary_key=True)
+    key_subject = models.CharField(max_length=7)
+    name = models.CharField(max_length=80)
+    credits = models.PositiveSmallIntegerField()
+    has_extraordinary = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.key_subject} - {self.name}"
 
 class Semester(models.Model):
     idSemester = models.AutoField(primary_key=True)
     syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True)
     number = models.PositiveSmallIntegerField()
 
     def __str__(self):

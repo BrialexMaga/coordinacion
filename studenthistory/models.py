@@ -1,17 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator
-from studentform.models import School_Cycle, Student, Career, Semester
-
-class Subject(models.Model):
-    idSubject = models.AutoField(primary_key=True)
-    key_subject = models.CharField(max_length=7)
-    name = models.CharField(max_length=80)
-    credits = models.PositiveSmallIntegerField()
-    has_extraordinary = models.BooleanField(default=True)
-    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.key_subject} - {self.name}"
+from studentform.models import School_Cycle, Student, Career, Subject
 
 class Section(models.Model):
     idSection = models.AutoField(primary_key=True)
