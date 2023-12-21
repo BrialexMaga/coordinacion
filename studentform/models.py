@@ -54,7 +54,7 @@ class Semester(models.Model):
     number = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return f"{self.syllabus.career} - Semestre {self.number}"
+        return f"{self.syllabus.career} - Semestre {self.number} - {self.subject.name}"
     
 class Student(models.Model):
     idStudent = models.BigAutoField(primary_key=True)

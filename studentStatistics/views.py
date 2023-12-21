@@ -36,14 +36,18 @@ def showStatistics(request, generation):
     art33_expelled_students = students.filter(status__code_name='BC')
     art35_expelled_students = students.filter(status__code_name='B5')
 
-    semesters = extractSemesters(gen, cycles.last())    # Posibles problemas por tomar el ultimo ciclo de los registros.
     registers_semesters = []
+    last = [0, None]
 
-    # Posibles problemas de rendimiento
     for student in students:
         begin, end = student.admission_cycle, student.last_cycle
         no_semesters = extractSemesters(begin, end)
         registers_semesters.append(no_semesters)
+
+        if no_semesters > last[0]:
+            last[0], last[1] = no_semesters, end
+    
+    semesters = extractSemesters(gen, last[1])
 
     if len(students) < 1:
         finish_percent = calculate_percent(len(finish_students), 1)
