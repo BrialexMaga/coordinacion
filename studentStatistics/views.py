@@ -86,22 +86,27 @@ def extractAttachedStudents(students, semesters):
     for i, student in enumerate(students):
         is_attached = True
         current_semester = semesters[i]
-        current_plan = syllabus_plan.filter(number__lte=current_semester).order_by('number')
-        should_have_subjects = list([semester.subject for semester in current_plan])
+        plan_max_semesters = student.syllabus.semesters
 
-        j = 0
-        while j < len(should_have_subjects):
-            subject = should_have_subjects[j]
-            courses = Course.objects.filter(student=student, section__subject=subject).order_by('school_cycle__year','school_cycle__cycle_period', 'grade_period')
-            if len(courses) < 1:
-                is_attached = False
-                break
-            else:
-                if courses.last().grade == 'SD' or int(courses.last().grade) < 60:
+        if current_semester > plan_max_semesters:
+            is_attached = False
+        else:
+            current_plan = syllabus_plan.filter(number__lte=current_semester).order_by('number')
+            should_have_subjects = list([semester.subject for semester in current_plan])
+
+            j = 0
+            while j < len(should_have_subjects):
+                subject = should_have_subjects[j]
+                courses = Course.objects.filter(student=student, section__subject=subject).order_by('school_cycle__year','school_cycle__cycle_period', 'grade_period')
+                if len(courses) < 1:
                     is_attached = False
                     break
-            
-            j += 1
+                else:
+                    if courses.last().grade == 'SD' or int(courses.last().grade) < 60:
+                        is_attached = False
+                        break
+                
+                j += 1
         
         if is_attached:
             attached_students += 1
