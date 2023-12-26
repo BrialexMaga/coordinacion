@@ -46,6 +46,7 @@ MYAPPS = [
     'studentform',
     'studenthistory',
     'studentStatistics',
+    'rateSubjectFailures',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + MYAPPS

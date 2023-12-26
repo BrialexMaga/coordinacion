@@ -22,5 +22,6 @@ urlpatterns = [
     path("contacts/", include("studentform.urls")),
     path("student_history/", include("studenthistory.urls")),
     path("student_statistics/", include("studentStatistics.urls")),
+    path("subject_failures/", include("rateSubjectFailures.urls")),
     path('admin/', admin.site.urls),
 ]
