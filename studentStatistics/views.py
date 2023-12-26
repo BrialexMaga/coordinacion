@@ -21,21 +21,6 @@ def showStatistics(request, generation):
     gen = School_Cycle.objects.get(idCycle=generation)
     students = Student.objects.filter(admission_cycle=gen)
 
-    if request.GET.get('status') or request.GET.get('last_cycle'):
-        select_status = request.GET.get('status', '')
-        select_last_cycle = request.GET.get('last_cycle', '')
-
-        students = students.filter(status__status__icontains=select_status)
-
-        if select_last_cycle:
-            year, cycle_period = select_last_cycle[:-1], select_last_cycle[-1]
-            students = students.filter(last_cycle__year=year, last_cycle__cycle_period=cycle_period)
-
-    finish_students = students.filter(status__code_name='GD')
-    graduated_students = students.filter(status__code_name='TT')
-    art33_expelled_students = students.filter(status__code_name='BC')
-    art35_expelled_students = students.filter(status__code_name='B5')
-
     registers_semesters = []
     last = [0, None]
     for student in students:
@@ -45,6 +30,29 @@ def showStatistics(request, generation):
 
         if no_semesters > last[0]:
             last[0], last[1] = no_semesters, end
+
+    if request.GET.get('status') or request.GET.get('last_cycle') or request.GET.get('semester'):
+        select_status = request.GET.get('status', '')
+        select_last_cycle = request.GET.get('last_cycle', '')
+        select_semester = request.GET.get('semester', '')
+
+        students = students.filter(status__status__icontains=select_status)
+
+        if select_last_cycle:
+            year, cycle_period = select_last_cycle[:-1], select_last_cycle[-1]
+            students = students.filter(last_cycle__year=year, last_cycle__cycle_period=cycle_period)
+        
+        if select_semester:
+            try:
+                filtered, registers_semesters = filterStudents(int(select_semester), registers_semesters, students)
+                students = students.filter(idStudent__in=filtered)
+            except:
+                print("Error: Por favor, ingrese un valor numérico para el filtro de semestres.")
+
+    finish_students = students.filter(status__code_name='GD')
+    graduated_students = students.filter(status__code_name='TT')
+    art33_expelled_students = students.filter(status__code_name='BC')
+    art35_expelled_students = students.filter(status__code_name='B5')
     
     if len(students) < 1:
         attached_students = attached_percent = finish_percent = graduated_percent = semesters = 0
@@ -78,6 +86,16 @@ def extractSemesters(CycleA, CycleB):
             semesters += 1
 
         return semesters
+
+def filterStudents(filter, semesters, students):
+    filtered_students = []
+    semesters_list = []
+    for i, student in enumerate(students):
+        if semesters[i] == filter:
+            filtered_students.append(student.idStudent)
+            semesters_list.append(semesters[i])
+
+    return filtered_students, semesters_list
 
 def extractAttachedStudents(students, semesters):
     syllabus = students.first().syllabus
