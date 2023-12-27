@@ -4,4 +4,25 @@
 
 {% block content %}
     <h2>Indice de reprobados por materia</h2>
+    
+    <h3>Por Ciclo</h3>
+    <form method="POST" action="{% url 'cycle-page' %}">
+        {% csrf_token %}
+        {{ cycleForm.as_p }}
+        <button type="submit">Consultar</button>
+    </form>
+
+    <h3>Por Ciclo y Materia</h3>
+    <form method="POST" action="{% url 'cycle-subject-page' %}">
+        {% csrf_token %}
+        {{ cycleRangeForm.as_p }}
+        <button type="submit">Consultar</button>
+    </form>
+
+    <h3>Por Ciclo</h3>
+    <form method="POST" action="{% url 'cycle-range-page' %}">
+        {% csrf_token %}
+        {{ rangeForm.as_p }}
+        <button type="submit">Consultar</button>
+    </form>
 {% endblock %}
