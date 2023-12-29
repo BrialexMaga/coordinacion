@@ -19,7 +19,7 @@
         <button type="submit">Consultar</button>
     </form>
 
-    <h3>Por Ciclo</h3>
+    <h3>Por periodo entre ciclos</h3>
     <form method="POST" action="{% url 'cycle-range-page' %}">
         {% csrf_token %}
         {{ rangeForm.as_p }}

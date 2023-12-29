@@ -4,4 +4,27 @@
 
 {% block content %}
     <h2>Por Ciclo</h2>
+
+    <table>
+        <thead>
+            <th>Clave</th>
+            <th>Materia</th>
+            <th>Promedio de reprobados por secciones</th>
+            <th>Total de Alumnos</th>
+            <th>Total de Alumnos reprobados</th>
+            <th>Porcentaje de Alumnos reprobados</th>
+        </thead>
+        <tbody>
+            {% for statistic in statistics %}
+            <tr>
+                <td> {{ statistic.key_subject }} </td>
+                <td> {{ statistic.subject }} </td>
+                <td> {{ statistic.section_fail_rate }}% </td>
+                <td> {{ statistic.total_students }} </td>
+                <td> {{ statistic.total_failed }} </td>
+                <td> {{ statistic.failed_rate }}% </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
