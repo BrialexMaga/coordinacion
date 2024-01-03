@@ -3,6 +3,9 @@ from .forms import byCycleForm, byCycleAndSubjectForm, byCycleRangeForm
 from studentform.models import Subject
 from studenthistory.models import Section
 
+from django.db.models import IntegerField
+from django.db.models.functions import Cast
+
 def filterRateSubjectFailures(request):
     form = byCycleAndSubjectForm()
     form2 = byCycleForm()
@@ -61,27 +64,34 @@ def makeByCycleStatistics(courses):
             section = Section.objects.get(idSection=section_index)
 
             total_students = section_courses.values_list('student__idStudent', flat=True).distinct().count()
-            passed_extraordinary = section_courses.filter(grade_period__code_name='E', grade__gte='60').values_list('student__idStudent', flat=True).distinct()
-            another_passed_extraordinary = subject_courses.filter(grade_period__code_name='OE', grade__gte='100').values_list('student__idStudent', flat=True)
-            passed_extraordinary = list(set(passed_extraordinary) | set(another_passed_extraordinary))
+
+            passed_extraordinary = section_courses.exclude(grade__in=['SD']).annotate(
+                grade_int=Cast('grade', IntegerField())
+            ).filter(grade_period__code_name='E', grade_int__gte=60, grade_int__lte=100).values_list('student__idStudent', flat=True).distinct()
             
             no_passed_extraordinary = len(passed_extraordinary)
-            no_passed_ordinary = section_courses.filter(grade_period__code_name='OE', grade__gte='60').count()
-            no_failed_extraordinary = section_courses.filter(grade_period__code_name='E', grade__lt='60').count()
+            no_passed_ordinary = section_courses.exclude(grade__in=['SD']).annotate(
+                grade_int=Cast('grade', IntegerField())
+            ).filter(grade_period__code_name='OE', grade_int__gte=60, grade_int__lte=100).count()
+
+            no_failed_extraordinary = section_courses.exclude(grade__in=['SD']).annotate(
+                grade_int=Cast('grade', IntegerField())
+            ).filter(grade_period__code_name='E', grade_int__lt=60).count()
             no_failed_extraordinary += section_courses.filter(grade_period__code_name='E', grade='SD').count()
 
-            section_courses_failed_numeric = section_courses.filter(grade_period__code_name='OE', grade__lt='60')
-            no_failed_ordinary = section_courses_failed_numeric.count()
+            no_failed_ordinary = total_students - no_passed_ordinary
+
+            section_courses_failed_numeric = section_courses.exclude(grade__in=['SD']).annotate(
+                grade_int=Cast('grade', IntegerField())
+            ).filter(grade_period__code_name='OE', grade_int__lt=60)
             section_courses_failed_numeric = section_courses_failed_numeric.exclude(student__idStudent__in=passed_extraordinary).count()
 
             section_courses_failed_sd = section_courses.filter(grade_period__code_name='OE', grade='SD')
-            no_sd_ordinary = section_courses_failed_sd.count()
-            no_failed_ordinary += no_sd_ordinary
             section_courses_failed_sd = section_courses_failed_sd.exclude(student__idStudent__in=passed_extraordinary).count()
+            
+            no_sd = section_courses_failed_sd + section_courses.filter(grade_period__code_name='E', grade='SD').count()
 
             section_courses_failed = section_courses_failed_numeric + section_courses_failed_sd
-
-            no_sd = no_sd_ordinary #+ section_courses.filter(grade_period__code_name='E', grade='SD').count()
 
             SD_percent = calculatePercent(no_sd, total_students)
             OE_percent = calculatePercent(no_passed_ordinary, total_students)
@@ -99,11 +109,14 @@ def makeByCycleStatistics(courses):
                               'NO_OE_percent': NO_OE_percent, 'NO_E_percent': NO_E_percent})
 
         total_students = subject_courses.values_list('student__idStudent', flat=True).distinct().count()
-        passed_extraordinary = subject_courses.filter(grade_period__code_name='E', grade__gte='60').values_list('student__idStudent', flat=True)
-        another_passed_extraordinary = subject_courses.filter(grade_period__code_name='OE', grade__gte='100').values_list('student__idStudent', flat=True)
-        passed_extraordinary = list(set(passed_extraordinary) | set(another_passed_extraordinary))
 
-        subject_courses_failed_numeric = subject_courses.filter(grade_period__code_name='OE', grade__lt='60')
+        passed_extraordinary = subject_courses.exclude(grade__in=['SD']).annotate(
+            grade_int=Cast('grade', IntegerField())
+        ).filter(grade_period__code_name='E', grade_int__gte=60, grade_int__lte=100).values_list('student__idStudent', flat=True).distinct()
+
+        subject_courses_failed_numeric = subject_courses.exclude(grade__in=['SD']).annotate(
+                grade_int=Cast('grade', IntegerField())
+            ).filter(grade_period__code_name='OE', grade_int__lt=60)
         subject_courses_failed_numeric = subject_courses_failed_numeric.exclude(student__idStudent__in=passed_extraordinary).count()
 
         subject_courses_failed_sd = subject_courses.filter(grade_period__code_name='OE', grade='SD')
