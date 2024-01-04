@@ -29,8 +29,15 @@ def byCycleSubjectFilter(request):
         form = byCycleAndSubjectForm(request.POST)
         if form.is_valid():
             courses = form.filter_courses()
-            # Logica
-            return render(request, 'rateSubjectFailures/by_cycle_subject.html', {'courses': courses})
+            if courses.exists():
+                title = f'{courses.first().school_cycle} - {courses.first().section.subject}'
+            else:
+                title = "No hay registros para mostrar"
+
+            registers = makeByCycleSubjectRegisters(courses)
+            
+            return render(request, 'rateSubjectFailures/by_cycle_subject.html', 
+                          {'registers': registers, 'title': title, 'are_there_registers': len(registers) > 0})
 
 def byCycleRangeFilter(request):
     if request.method == 'POST':
@@ -135,3 +142,25 @@ def makeByCycleStatistics(courses):
                             'total_failed': subject_courses_failed, 'failed_rate': failed_rate})
     
     return statistics, registers
+
+def makeByCycleSubjectRegisters(courses):
+    courses = courses.order_by('section__section', 'student__idStudent', 'grade_period__code_name')
+    students = list(dict.fromkeys(courses.values_list('student__idStudent', flat=True).distinct()).keys())
+
+    registers = []
+    for student_id in students:
+        course = courses.filter(student__idStudent=student_id)
+        section = course.first().section
+        student_info = course.first().student
+
+        if course.count() > 1:
+            grade_ordinary = course.filter(grade_period__code_name='OE').first().grade
+            grade_extraordinary = course.filter(grade_period__code_name='E').first().grade
+        else:
+            grade_ordinary = course.first().grade
+            grade_extraordinary = ""
+
+        registers.append({"section": section.section, "name": f'{student_info.name} {student_info.first_last_name} {student_info.second_last_name}', 
+                          "code": student_info.code, "OE": grade_ordinary, "E": grade_extraordinary})
+
+    return registers

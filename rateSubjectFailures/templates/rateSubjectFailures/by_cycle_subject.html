@@ -3,5 +3,28 @@
 {% block title %}Por Ciclo | Materia{% endblock %}
 
 {% block content %}
-    <h2>Por Ciclo | Materia</h2>
+    <h2> {{ title }} </h2>
+
+    {% if are_there_registers %}
+    <table>
+        <thead>
+            <th>Sección</th>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th>Ordinario</th>
+            <th>Extraordinario</th>
+        </thead>
+        <tbody>
+            {% for register in registers %}
+            <tr>
+                <td> {{ register.section }} </td>
+                <td> {{ register.name }} </td>
+                <td> {{ register.code }} </td>
+                <td> {{ register.OE }} </td>
+                <td> {{ register.E }} </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 {% endblock %}
