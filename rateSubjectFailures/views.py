@@ -44,7 +44,10 @@ def byCycleRangeFilter(request):
         form = byCycleRangeForm(request.POST)
         if form.is_valid():
             courses = form.filter_courses()
-            return render(request, 'rateSubjectFailures/by_cycle_range.html', {'courses': courses})
+            registers = makebyCycleRangeRegisters(courses)
+
+            return render(request, 'rateSubjectFailures/by_cycle_range.html', 
+                          {'courses': courses, 'registers': registers})
 
 
 
@@ -163,4 +166,35 @@ def makeByCycleSubjectRegisters(courses):
         registers.append({"section": section.section, "name": f'{student_info.name} {student_info.first_last_name} {student_info.second_last_name}', 
                           "code": student_info.code, "OE": grade_ordinary, "E": grade_extraordinary})
 
+    return registers
+
+def makebyCycleRangeRegisters(courses):
+    calculatePercent = lambda x, y: round(x / y * 100, 2) if y else 0
+    subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
+
+    registers = []
+    for subject_index in subject_indexes:
+        subject = Subject.objects.get(idSubject=subject_index)
+        subject_courses = courses.filter(section__subject__idSubject=subject_index).order_by('section__section', 'student__idStudent', 
+                                                                                                'grade_period__code_name')
+        
+        total_students = subject_courses.values_list('student__idStudent', 'school_cycle__idCycle').distinct().count()
+
+        passed_extraordinary = subject_courses.exclude(grade__in=['SD']).annotate(
+            grade_int=Cast('grade', IntegerField())
+        ).filter(grade_period__code_name='E', grade_int__gte=60, grade_int__lte=100).values_list('student__idStudent', flat=True).distinct()
+
+        subject_courses_failed_numeric = subject_courses.exclude(grade__in=['SD']).annotate(
+                grade_int=Cast('grade', IntegerField())
+            ).filter(grade_period__code_name='OE', grade_int__lt=60)
+        subject_courses_failed_numeric = subject_courses_failed_numeric.exclude(student__idStudent__in=passed_extraordinary).count()
+
+        subject_courses_failed_sd = subject_courses.filter(grade_period__code_name='OE', grade='SD')
+        subject_courses_failed_sd = subject_courses_failed_sd.exclude(student__idStudent__in=passed_extraordinary).count()
+
+        subject_courses_failed = subject_courses_failed_numeric + subject_courses_failed_sd
+
+        registers.append({'key_subject': subject.key_subject, 'subject': subject.name, 'total_students': total_students,
+                          'failed_students': subject_courses_failed, 'failed_rate': calculatePercent(subject_courses_failed, total_students)})
+        
     return registers

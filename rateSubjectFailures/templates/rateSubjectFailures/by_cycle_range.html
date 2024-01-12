@@ -4,4 +4,21 @@
 
 {% block content %}
     <h2>Por Rango de Ciclos</h2>
+    <table>
+        <tr>
+            <th>Clave</th>
+            <th>Materia</th>
+            <th>Total de Alumnos</th>
+            <th>Total de Alumnos Reprobados</th>
+            <th>Porcentaje de Alumnos Reprobados</th>
+        </tr>
+        {% for register in registers %}
+            <tr>
+                <td>{{ register.key_subject }}</td>
+                <td>{{ register.subject }}</td>
+                <td>{{ register.total_students }}</td>
+                <td>{{ register.failed_students }}</td>
+                <td>{{ register.failed_rate }}%</td>
+            </tr>
+        {% endfor %}
 {% endblock %}
