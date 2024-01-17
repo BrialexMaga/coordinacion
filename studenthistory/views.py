@@ -7,10 +7,13 @@ from collections import OrderedDict
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
+from django.contrib.auth.decorators import login_required
+
 import pickle
 import pandas as pd
 import numpy as np
 
+@login_required
 def searchPage(request):
     if request.method == 'POST':
         form = StudentCodeForm(request.POST)

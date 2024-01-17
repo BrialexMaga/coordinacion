@@ -4,6 +4,9 @@ from studentform.models import Student, School_Cycle, Syllabus, Semester
 from studenthistory.models import Course
 from itertools import chain
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def filterGeneration(request):
     if request.method == 'POST':
         form = FilterForm(request.POST)
@@ -15,6 +18,7 @@ def filterGeneration(request):
 
     return render(request, 'studentStatistics/statistics_search_page.html', {'form': form})
 
+@login_required
 def showStatistics(request, generation):
     calculate_percent = lambda x, total: int(x * 100 / total)
 

@@ -9,6 +9,9 @@ from .factories import StudentFactory
 from django.http import HttpResponse
 import csv
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def index(request):
     students = Student.objects.all()
     contacts = Contact.objects.all()
@@ -25,6 +28,7 @@ def index(request):
     return render(request, "studentform/index.html", {'students':students, 'contacts':contacts, 
                                                       'cycles':cycles, 'careers':careers, 'statuses':statuses})
 
+@login_required
 def exportContacts(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="contacts.csv"'
@@ -61,6 +65,7 @@ def exportContacts(request):
 
     return response
 
+@login_required
 def exportStudentData(request, idStudent):
     student = Student.objects.get(pk=idStudent)
     contact = Contact.objects.get(idStudent=student)
@@ -96,12 +101,14 @@ def exportStudentData(request, idStudent):
                     contact.idStudent.code, "Estatus", contact.idStudent.status.status])
     return response
 
+@login_required
 def showContact(request, idStudent):
     student = get_object_or_404(Student, pk=idStudent)
     contact = student.contact
 
     return render(request, 'studentform/student_contact.html', {'student': student, 'contact': contact})
 
+@login_required
 def createFormStudent(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -125,6 +132,7 @@ def createFormStudent(request):
     
     return render(request, "studentform/student_form.html", {'form': form})
 
+@login_required
 def createFormContact(request, idStudent):
     student = get_object_or_404(Student, pk=idStudent)
     contact, created = Contact.objects.get_or_create(idStudent=student)

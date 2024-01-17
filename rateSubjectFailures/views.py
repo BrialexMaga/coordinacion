@@ -6,6 +6,9 @@ from studenthistory.models import Section
 from django.db.models import IntegerField
 from django.db.models.functions import Cast
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def filterRateSubjectFailures(request):
     form = byCycleAndSubjectForm()
     form2 = byCycleForm()
@@ -14,6 +17,7 @@ def filterRateSubjectFailures(request):
     return render(request, 'rateSubjectFailures/failing_rate_filter.html', 
                   {'cycleRangeForm': form, 'cycleForm': form2, 'rangeForm': form3})
 
+@login_required
 def byCycleFilter(request):
     if request.method == 'POST':
         form = byCycleForm(request.POST)
@@ -24,6 +28,7 @@ def byCycleFilter(request):
             return render(request, 'rateSubjectFailures/by_cycle.html', 
                           {'statistics': statistics, 'registers': registers})
 
+@login_required
 def byCycleSubjectFilter(request):
     if request.method == 'POST':
         form = byCycleAndSubjectForm(request.POST)
@@ -39,6 +44,7 @@ def byCycleSubjectFilter(request):
             return render(request, 'rateSubjectFailures/by_cycle_subject.html', 
                           {'registers': registers, 'title': title, 'are_there_registers': len(registers) > 0})
 
+@login_required
 def byCycleRangeFilter(request):
     if request.method == 'POST':
         form = byCycleRangeForm(request.POST)
