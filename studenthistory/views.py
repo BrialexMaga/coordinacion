@@ -28,7 +28,7 @@ def searchPage(request):
                 has_courses = len(courses) > 0
 
                 cycles_list, semesters = extractCycles(courses, student, has_courses)
-                risk_subjects, len_risk_subjects = extractRiskSubjects(courses, student)
+                risk_subjects, len_risk_subjects = extractRiskSubjects(courses)
                 total_credits, remaining_credits = extractCredits(courses, student)
                 average_score = extractAverageScore(courses, has_courses)
 
@@ -79,7 +79,7 @@ def extractAverageScore(courses, has_courses):
         
         average_score = score / divider
 
-    return average_score
+    return round(average_score, 2)
 
 
 def extractCredits(courses, student):
@@ -111,7 +111,7 @@ def extractCycles(courses, student, has_courses):
 
     return cycles, 1
 
-def extractRiskSubjects(courses, student):
+def extractRiskSubjects(courses):
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
     subject_indexes = list(set(subject_indexes))
 
