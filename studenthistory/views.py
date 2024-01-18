@@ -278,29 +278,29 @@ def getStudentVector(student, courses, career, accumulated_credits, missing_cred
         if len(extraordinary) > 0 and subject_info.name != 'PRACTICAS PROFESIONALES':
             last_ordinary = ordinary.last()
             last_extraordinary = extraordinary.last()
-            extraordinary_grade, is_SD = gradeConverter(last_extraordinary.grade)
-            ordinary_grade, is_SD = gradeConverter(last_ordinary.grade)
+            extraordinary_grade, E_is_SD = gradeConverter(last_extraordinary.grade)
+            ordinary_grade, OE_is_SD = gradeConverter(last_ordinary.grade)
 
             if len(ordinary) == len(extraordinary):
-                if not is_SD and extraordinary_grade > 59:
+                if not E_is_SD and extraordinary_grade > 59:
                     data['subject' + str(i)] = len(ordinary)
                 else:
                     data['subject' + str(i)] = -1
             else:
                 if last_ordinary.school_cycle == last_extraordinary.school_cycle:
-                    if not is_SD and extraordinary_grade > 59:
+                    if not E_is_SD and extraordinary_grade > 59:
                         data['subject' + str(i)] = len(ordinary)
                     else:
                         data['subject' + str(i)] = -1
                 else:
-                    if not is_SD and ordinary_grade > 59:
+                    if not OE_is_SD and ordinary_grade > 59:
                         data['subject' + str(i)] = len(ordinary)
                     else:
                         data['subject' + str(i)] = -1
         else:
             last_ordinary = ordinary.last()
-            ordinary_grade, is_SD = gradeConverter(last_ordinary.grade)
-            if not is_SD and ordinary_grade > 59:
+            ordinary_grade, OE_is_SD = gradeConverter(last_ordinary.grade)
+            if not OE_is_SD and ordinary_grade > 59:
                 data['subject' + str(i)] = len(ordinary)
             else:
                 data['subject' + str(i)] = -1
