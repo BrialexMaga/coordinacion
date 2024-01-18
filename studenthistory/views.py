@@ -113,6 +113,45 @@ def extractCycles(courses, student, has_courses):
 
 def extractRiskSubjects(courses, student):
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
+    subject_indexes = list(set(subject_indexes))
+
+    risk_courses = []
+    for subject_index in subject_indexes:
+        subject_info = Subject.objects.get(idSubject=subject_index)
+        subject_courses = courses.filter(section__subject__idSubject=subject_index).order_by('school_cycle__year',
+                                                                                             'school_cycle__cycle_period',
+                                                                                             'grade_period')
+        
+        ordinary = subject_courses.filter(grade_period__code_name = 'OE')
+        extraordinary = subject_courses.filter(grade_period__code_name = 'E')
+
+        if len(extraordinary) > 0:
+            last_ordinary = ordinary.last()
+            last_extraordinary = extraordinary.last()
+            extraordinary_grade, E_is_SD = gradeConverter(last_extraordinary.grade)
+            ordinary_grade, OE_is_SD = gradeConverter(last_ordinary.grade)
+
+            if len(ordinary) == len(extraordinary):
+                if E_is_SD or extraordinary_grade < 60:
+                    risk_courses.append(subject_info)
+            else:
+                if last_ordinary.school_cycle == last_extraordinary.school_cycle:
+                    if E_is_SD or extraordinary_grade < 60:
+                        risk_courses.append(subject_info)
+                else:
+                    if OE_is_SD or ordinary_grade < 60:
+                        risk_courses.append(subject_info)
+        else:
+            last_ordinary = ordinary.last()
+            ordinary_grade, OE_is_SD = gradeConverter(last_ordinary.grade)
+            if OE_is_SD or ordinary_grade < 60:
+                risk_courses.append(subject_info)
+
+    return risk_courses, len(risk_courses)
+
+'''
+def extractRiskSubjects(courses, student):
+    subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
     subjects_indexes = list(set(subject_indexes))
 
     today_date = datetime.now().date()
@@ -181,6 +220,7 @@ def extractRiskSubjects(courses, student):
                 risk_courses.append(subject_info)                
     
     return risk_courses, len(risk_courses)
+'''
 
 
 def predictRisk(student, courses, career, total_credits, remaining_credits, average, semesters):
