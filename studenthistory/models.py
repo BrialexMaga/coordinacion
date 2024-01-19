@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.validators import MaxValueValidator
-from studentform.models import School_Cycle, Student, Career, Subject
+from studentform.models import School_Cycle, Student, Career, Subject, SoftDeletionModel, SoftDeletionModelManager
 
-class Section(models.Model):
+class Section(SoftDeletionModel):
     idSection = models.AutoField(primary_key=True)
     subject = models.ForeignKey(Subject, on_delete=models.PROTECT)
     nrc = models.CharField(max_length=15)
@@ -19,7 +19,7 @@ class GradePeriod(models.Model):
     def __str__(self):
         return f"{self.grade_period} ({self.code_name})"
 
-class Course(models.Model):
+class Course(SoftDeletionModel):
     idCourse = models.AutoField(primary_key=True)
     school_cycle = models.ForeignKey(School_Cycle, on_delete=models.PROTECT)
     student = models.ForeignKey(Student, on_delete=models.PROTECT)
@@ -31,7 +31,7 @@ class Course(models.Model):
     def __str__(self):
         return f"{self.school_cycle} - {self.section} - {self.student}"
 
-class CareerSubject(models.Model):
+class CareerSubject(SoftDeletionModel):
     career = models.ForeignKey(Career, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
 

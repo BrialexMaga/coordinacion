@@ -1,7 +1,23 @@
 from django.db import models
+from django.utils import timezone
 
-# Create your models here.
-class School_Cycle(models.Model):
+class SoftDeletionModelManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+class SoftDeletionModel(models.Model):
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    objects = SoftDeletionModelManager()
+
+    class Meta:
+        abstract = True
+
+    def delete(self):
+        self.deleted_at = timezone.now()
+        self.save()
+
+class School_Cycle(SoftDeletionModel):
     idCycle = models.AutoField(primary_key=True)
     year = models.CharField(max_length=5)
     cycle_period = models.CharField(max_length=1)
@@ -11,7 +27,7 @@ class School_Cycle(models.Model):
     def __str__(self):
         return f"{self.year}{self.cycle_period}"
     
-class Career(models.Model):
+class Career(SoftDeletionModel):
     idCareer = models.AutoField(primary_key=True)
     code_name = models.CharField(max_length=5)
     name = models.CharField(max_length=100)
@@ -27,7 +43,7 @@ class Status(models.Model):
     def __str__(self):
         return self.code_name
     
-class Syllabus(models.Model):
+class Syllabus(SoftDeletionModel):
     idSyllabus = models.AutoField(primary_key=True)
     career = models.ForeignKey(Career, on_delete=models.PROTECT)
     name = models.CharField(max_length=45)
@@ -37,7 +53,7 @@ class Syllabus(models.Model):
     def __str__(self):
         return f"{self.career} - Plan {self.name}"
     
-class Subject(models.Model):
+class Subject(SoftDeletionModel):
     idSubject = models.AutoField(primary_key=True)
     key_subject = models.CharField(max_length=7)
     name = models.CharField(max_length=80)
@@ -47,7 +63,7 @@ class Subject(models.Model):
     def __str__(self):
         return f"{self.key_subject} - {self.name}"
 
-class Semester(models.Model):
+class Semester(SoftDeletionModel):
     idSemester = models.AutoField(primary_key=True)
     syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True)
@@ -56,7 +72,7 @@ class Semester(models.Model):
     def __str__(self):
         return f"{self.syllabus.career} - Semestre {self.number} - {self.subject.name}"
     
-class Student(models.Model):
+class Student(SoftDeletionModel):
     idStudent = models.BigAutoField(primary_key=True)
     code = models.CharField(max_length=9, unique=True)
     name = models.CharField(max_length=50)
