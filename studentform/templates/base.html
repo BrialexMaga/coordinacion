@@ -15,19 +15,23 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                   <ul class="navbar-nav">
                     <li class="nav-item text-white">
-                      <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+                      <a class="nav-link{% if request.path == '/' %} active" aria-current="page{% endif %}" href="/">Inicio</a>
                     </li>
+                    {% url 'contacts' as contacts_url %}
                     <li class="nav-item text-white">
-                      <a class="nav-link active" aria-current="page" href="{% url 'contacts' %}">Consultar Contactos</a>
+                      <a class="nav-link{% if request.path == contacts_url %} active" aria-current="page{% endif %}" href="{{ contacts_url }}">Consultar Contactos</a>
                     </li>
+                    {% url 'history-search-page' as history_url %}
                     <li class="nav-item text-white">
-                      <a class="nav-link" href="{% url 'history-search-page' %}">Consultar Historial de Estudiante</a>
+                      <a class="nav-link{% if request.path == history_url %} active" aria-current="page{% endif %}" href="{{ history_url }}">Consultar Historial de Estudiante</a>
                     </li>
+                    {% url 'student-statistics-search-page' as statistics_url %}
                     <li class="nav-item text-white">
-                      <a class="nav-link" href="{% url 'student-statistics-search-page' %}">Estadísticas de Alumnos</a>
+                      <a class="nav-link{% if request.path == statistics_url %} active" aria-current="page{% endif %}" href="{{ statistics_url }}">Estadísticas de Alumnos</a>
                     </li>
+                    {% url 'filter-failure-page' as failure_url %}
                     <li class="nav-item text-white">
-                      <a class="nav-link" href="{% url 'filter-failure-page' %}">Indice de reprobados por materia</a>
+                      <a class="nav-link{% if request.path == failure_url %} active" aria-current="page{% endif %}" href="{{ failure_url }}">Indice de reprobados por materia</a>
                     </li>
                   </ul>
                 </div>
