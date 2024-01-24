@@ -136,7 +136,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'studentform/static')]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'studentform/static'),
+    os.path.join(BASE_DIR, 'landingpage/static/landingpage')
+    ]
 
 # Deploy Config?
 # STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
