@@ -2,141 +2,56 @@
 
 {% block title %}Contactos{% endblock %}
 
+{% load static %}
 {% block content %}
-    <h1>Index</h1>
-    <h2>Estudiantes</h2>
-    <a href="{% url 'export-contacts' %}"  class="btn btn-primary">Exportar Contactos</a>
-
-    <form method="GET" action="{% url 'contacts' %}">
-        <input type="text" name="code" placeholder="Buscar por código">
-        <input type="text" name="name" placeholder="Buscar por nombre">
-        <button type="submit">Buscar</button>
-    </form>
-    
-    <table>
-        <thead>
-            <th>id</th>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Primer Apellido</th>
-            <th>Segundo Apellido</th>
-            <th>Estatus</th>
-            <th>Admisión</th>
-            <th>Ultimo Ciclo</th>
-            <th>Carrera</th>
-            <th></th>
-            <th></th>
-        </thead>
-        <tbody>
-            {% for student in students %}
-                <tr>
-                    <td>{{ student.idStudent }}</td>
-                    <td>{{ student.code }}</td>
-                    <td>{{ student.name }}</td>
-                    <td>{{ student.first_last_name }}</td>
-                    <td>{{ student.second_last_name }}</td>
-                    <td>{{ student.status }}</td>
-                    <td>{{ student.admission_cycle }} </td>
-                    <td>{{ student.last_cycle }} </td>
-                    <td>{{ student.idCareer }} </td>
-                    <td><a href="{% url 'show-contact' student.idStudent %}">Ver Contacto</a></td>
-                    <td><a href="{% url 'contact-form' student.idStudent %}">Crear/Actualizar Contacto</a></td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <h2>Contacto</h2>
-    <table>
-        <thead>
-            <th>id_contacto</th>
-            <th>Telefono</th>
-            <th>Correo</th>
-            <th>Corrreo de UDG</th>
-            <th>Telefono de Emergencia</th>
-            <th>Red Social</th>
-            <th>Compañia donde trabaja</th>
-            <th>Posición</th>
-            <th>Estudiante</th>
-        </thead>
-        <tbody>
-            {% for contact in contacts %}
-                <tr>
-                    <td>{{ contact.idContact }}</td>
-                    <td>{{ contact.phone }}</td>
-                    <td>{{ contact.email }}</td>
-                    <td>{{ contact.udg_email }}</td>
-                    <td>{{ contact.emergency_phone }}</td>
-                    <td>{{ contact.url_socialnet }}</td>
-                    <td>{{ contact.company }}</td>
-                    <td>{{ contact.position }}</td>
-                    <td>{{ contact.idStudent }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <h2>Ciclo</h2>
-    <table>
-        <thead>
-            <th>id_ciclo</th>
-            <th>Ciclo</th>
-            <th>Año</th>
-            <th>Periodo escolar</th>
-            <th>Fecha de Inicio</th>
-            <th>Fecha de Finalización</th>
-        </thead>
-        <tbody>
-            {% for cycle in cycles %}
-                <tr>
-                    <td>{{ cycle.idCycle }}</td>
-                    <td>{{ cycle.year }}{{ cycle.cycle_period }}</td>
-                    <td>{{ cycle.year }}</td>
-                    <td>{{ cycle.cycle_period }}</td>
-                    <td>{{ cycle.start_date }}</td>
-                    <td>{{ cycle.end_date }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <h2>Carrera</h2>
-    <table>
-        <thead>
-            <th>idCarrera</th>
-            <th>code_name</th>
-            <th>Nombre</th>
-            <th>creditos necesarios</th>
-            <th>Semestres</th>
-        </thead>
-        <tbody>
-            {% for career in careers %}
-                <tr>
-                    <td>{{ career.idCareer }}</td>
-                    <td>{{ career.code_name }}</td>
-                    <td>{{ career.name }}</td>
-                    <td>{{ career.needed_credits }}</td>
-                    <td>{{ career.semesters }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <h2>Estatus</h2>
-    <table>
-        <thead>
-            <th>idStatus</th>
-            <th>code_name</th>
-            <th>status</th>
-        </thead>
-        <tbody>
-            {% for status in statuses %}
-                <tr>
-                    <td>{{ status.idStatus }}</td>
-                    <td>{{ status.code_name }}</td>
-                    <td>{{ status.status }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class='container-fluid'>
+    <br>
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'export-contacts' %}" class="btn text-white fw-semibold" style="background-color: #424E5E;">
+            <img src="{% static 'img/excel.png' %}" style="width: 20px; height: 20px;">
+            Exportar Contactos
+        </a>
+    </div>
+    <div>
+        <br>
+        <form method="GET" action="{% url 'contacts' %}">
+            <div>
+                <input type="text" name="code" placeholder="Buscar por código">
+                <input type="text" name="name" placeholder="Buscar por nombre">
+                <button class="btn text-white fw-semibold my-button-color" type="submit">Buscar</button>
+            </div>
+        </form>
+        
+        <table class="table table-striped">
+            <thead>
+                <th class="my-table-header">Código</th>
+                <th class="my-table-header">Nombre</th>
+                <th class="my-table-header">Primer Apellido</th>
+                <th class="my-table-header">Segundo Apellido</th>
+                <th class="my-table-header">Estatus</th>
+                <th class="my-table-header">Admisión</th>
+                <th class="my-table-header">Ultimo Ciclo</th>
+                <th class="my-table-header">Carrera</th>
+                <th class="my-table-header"></th>
+                <th class="my-table-header"></th>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.code }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.first_last_name }}</td>
+                        <td>{{ student.second_last_name }}</td>
+                        <td>{{ student.status }}</td>
+                        <td>{{ student.admission_cycle }} </td>
+                        <td>{{ student.last_cycle }} </td>
+                        <td>{{ student.idCareer }} </td>
+                        <td><a class="btn text-white fw-semibold" style="background-color: #424E5E;" href="{% url 'show-contact' student.idStudent %}">Ver Contacto</a></td>
+                        <td><a class="btn text-white fw-semibold" style="background-color: #424E5E;" href="{% url 'contact-form' student.idStudent %}">Crear/Actualizar Contacto</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
