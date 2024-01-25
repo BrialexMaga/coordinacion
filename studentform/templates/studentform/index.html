@@ -7,9 +7,9 @@
 <div class='container-fluid'>
     <br>
     <div class="d-flex justify-content-end">
-        <a href="{% url 'export-contacts' %}" class="btn text-white fw-semibold" style="background-color: #424E5E;">
-            <img src="{% static 'img/excel.png' %}" style="width: 20px; height: 20px;">
-            Exportar Contactos
+        <a class="btn text-white fw-semibold my-button-color" href="{% url 'export-contacts' %}">
+            <img style="width: 20px; height: 20px;" src="{% static 'img/excel.png' %}">
+            <pe class="ps-2">Exportar Contactos</pe>
         </a>
     </div>
     <div>
@@ -46,8 +46,8 @@
                         <td>{{ student.admission_cycle }} </td>
                         <td>{{ student.last_cycle }} </td>
                         <td>{{ student.idCareer }} </td>
-                        <td><a class="btn text-white fw-semibold" style="background-color: #424E5E;" href="{% url 'show-contact' student.idStudent %}">Ver Contacto</a></td>
-                        <td><a class="btn text-white fw-semibold" style="background-color: #424E5E;" href="{% url 'contact-form' student.idStudent %}">Crear/Actualizar Contacto</a></td>
+                        <td><a class="btn text-white fw-semibold my-button-color" href="{% url 'show-contact' student.idStudent %}">Ver Contacto</a></td>
+                        <td><a class="btn text-white fw-semibold my-button-color" href="{% url 'contact-form' student.idStudent %}">Crear/Actualizar Contacto</a></td>
                     </tr>
                 {% endfor %}
             </tbody>
