@@ -53,7 +53,11 @@ MYAPPS = [
     'rateSubjectFailures',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + MYAPPS
+THIRDPARTY_APPS = [
+    'widget_tweaks',
+]
+
+INSTALLED_APPS = DJANGO_APPS + MYAPPS + THIRDPARTY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

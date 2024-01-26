@@ -1,12 +1,33 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
 {% block title %}Actualiza/Crea Contacto{% endblock %}
 
+{% load static %}
 {% block content %}
-    <h2>Contacto para {{ student.name }}</h2>
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Guardar">
-    </form>
+    <div class="container pt-3 my-container-form-config">
+        <div class="border border-black text-center">
+        <h2 class="pt-2">Contacto para {{ student.name }} {{ student.first_last_name }}</h2>
+        <form action="" method="POST" class="form" autocomplete="off">
+            {% csrf_token %}
+            <div class="text-start ps-3 pe-3">
+                {% for field in form.visible_fields %}
+                    <label for="{{ field.id_for_label }}" class="pt-2 fw-bold"> {{ field.label_tag }} </label>
+                    {{ field|add_class:"form-control border border-black" }}
+                {% endfor %}
+            </div>
+
+            <div class="text-center pt-2 pb-3">
+                <button class="btn my-button-color fw-semibold" type="submit">
+                    <img style="width: 20px; height: 20px;" src="{% static 'img/disquete.png' %}">
+                    <pe class="ps-1">Guardar</pe>
+                </button>
+                <a class="btn text-white fw-semibold my-button-color" href="{% url 'contacts' %}">
+                    <img style="width: 20px; height: 20px;" src="{% static 'img/eliminar.png' %}">
+                    <pe class="ps-1">Descartar</pe>
+                </a>
+            </div>
+        </form>
+        </div>
+    </div>
 {% endblock %}
