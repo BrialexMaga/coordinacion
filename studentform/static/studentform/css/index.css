@@ -28,3 +28,11 @@
     background-color: #7a959e !important;
     width: 50% !important;
 }
+
+.history-table-len {
+    width: 550px !important;
+}
+
+.history-container {
+    width: 97% !important;
+}
