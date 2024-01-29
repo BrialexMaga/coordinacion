@@ -4,51 +4,44 @@
 
 {% load static %}
 {% block content %}
-<br>
-    <div class="container">
+    <div class="container pt-5">
         <div class="row">
             <!-- Opción 1 -->
-            <div class="col-md-3">
+            <div class="col-md-3 ps-4 pe-4">
                 <a href="{% url 'contacts' %}" style="display: block; height: 100%; color: inherit; text-decoration: none;">
-                    <div class="text-center rounded" style="background-color: #D3CAD2;">
-                        <img height=100px width=100px  src="{% static 'landingpage/contact.png' %}">
-                        <p class="text-center fw-semibold fs-4">Consultar Contactos</p>
+                    <div class="d-flex flex-column justify-content-center align-items-center text-center rounded my-landing-container" style="background-color: #D3CAD2;">
+                        <img height=175px width=175px  src="{% static 'landingpage/contact2.png' %}">
+                        <p class="text-center fw-semibold fs-2 pt-5">Consultar Contactos</p>
                     </div>
                 </a>
             </div>
             
             <!-- Opción 2 -->
-            <div class="col-md-3">
+            <div class="col-md-3 ps-3 pe-3">
                 <a href="{% url 'history-search-page' %}" style="display: block; height: 100%; color: inherit; text-decoration: none;">
-                    <div class="text-center rounded" style="background-color: #D3CAD2;">
-                        <br>
-                        <img height=100px width=100px  src="{% static 'landingpage/student.png' %}">
-                        <p class="text-center fw-semibold fs-4">Consultar Historial de Estudiante</p>
-                        <br>
+                    <div class="d-flex flex-column justify-content-center align-items-center text-center rounded my-landing-container" style="background-color: #D3CAD2;">
+                        <img height=175px width=175px  src="{% static 'landingpage/student.png' %}">
+                        <p class="text-center fw-semibold fs-2 pt-5">Consultar Historial de Estudiante</p>
                     </div>
                 </a>
             </div>
     
             <!-- Opción 3 -->
-            <div class="col-md-3">
+            <div class="col-md-3 ps-3 pe-3">
                 <a href="{% url 'student-statistics-search-page' %}" style="display: block; height: 100%; color: inherit; text-decoration: none;">
-                    <div class="text-center rounded" style="background-color: #D3CAD2;">
-                        <br>
-                        <img height=100px width=100px  src="{% static 'landingpage/graph.png' %}">
-                        <p class="text-center fw-semibold fs-4">Estadisticas de Alumnos</p>
-                        <br>
+                    <div class="d-flex flex-column justify-content-center align-items-center text-center rounded my-landing-container" style="background-color: #D3CAD2;">
+                        <img height=175px width=175px  src="{% static 'landingpage/graph2.png' %}">
+                        <p class="text-center fw-semibold fs-2 pt-5">Estadisticas de Alumnos</p>
                     </div>
                 </a>
             </div>
     
             <!-- Opción 4 -->
-            <div class="col-md-3">
+            <div class="col-md-3 ps-3 pe-3">
                 <a href="{% url 'filter-failure-page' %}" style="display: block; height: 100%; color: inherit; text-decoration: none;">
-                    <div class="text-center rounded" style="background-color: #D3CAD2;">
-                        <br>
-                        <img height=100px width=100px  src="{% static 'landingpage/education.png' %}">
-                        <p class="text-center fw-semibold fs-4">Indice de reprobados por materia</p>
-                        <br>
+                    <div class="d-flex flex-column justify-content-center align-items-center text-center rounded my-landing-container" style="background-color: #D3CAD2;">
+                        <img height=175px width=175px  src="{% static 'landingpage/education.png' %}">
+                        <p class="text-center fw-semibold fs-3 pt-5">Indice de reprobados por materia</p>
                     </div>
                 </a>
             </div>
