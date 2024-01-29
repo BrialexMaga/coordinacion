@@ -7,6 +7,15 @@
     color: white !important;
 }
 
+.my-landing-container {
+    height: 500px !important;
+}
+
+.my-landing-container:hover {
+    background-color: #424e5e !important;
+    color: white !important;
+}
+
 .my-container-config {
     width:450px !important;
 }
