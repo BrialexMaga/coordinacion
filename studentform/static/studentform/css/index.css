@@ -23,3 +23,8 @@
 .my-container-form-config {
     width:625px !important;
 }
+
+.history-search-container {
+    background-color: #7a959e !important;
+    width: 50% !important;
+}

@@ -1,12 +1,25 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
 {% block title %}Consultar Historial{% endblock %}
 
 {% block content %}
-    <h1>Consultar Estudiante</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Buscar</button>
-    </form>
+    <div class="container text-center">
+        <h1 class="pt-3 pb-4 fs-2">Consultar Estudiante</h1>
+        <div class="container history-search-container">
+            <form action="" method="POST" class="form" autocomplete="off">
+                {% csrf_token %}
+                <div class="text-start ps-3 pe-3">
+                    {% for field in form.visible_fields %}
+                        <label for="{{ field.id_for_label }}" class="pt-2 fw-semibold"> {{ field.label_tag }} </label>
+                        {{ field|add_class:"form-control border border-black" }}
+                    {% endfor %}
+                </div>
+
+                <br>
+                <button class="ps-5 pe-5 btn my-button-color" type="submit">Buscar</button>
+                <p class="pb-3"></p>
+            </form>
+        </div>
+    </div>
 {% endblock %}
