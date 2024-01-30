@@ -5,14 +5,14 @@
 
 {% block content %}
     <div class="container text-center">
-        <h1 class="pt-3 pb-4 fs-2 title-color">Estadisticas de Alumnos</h1>
+        <h1 class="pt-3 pb-4 fs-2 text-color">Estadisticas de Alumnos</h1>
         <div class="container history-search-container">
             <form action="" method="POST" class="form" autocomplete="off">
                 {% csrf_token %}
                 <div class="text-start ps-3 pe-3">
                     {% for field in form.visible_fields %}
-                        <label for="{{ field.id_for_label }}" class="pt-2 fw-semibold"> {{ field.label_tag }} </label>
-                        {{ field|add_class:"form-select" }}
+                        <label for="{{ field.id_for_label }}" class="pt-2 fw-semibold text-color"> {{ field.label_tag }} </label>
+                        {{ field|add_class:"form-select text-color" }}
                     {% endfor %}
                 </div>
 
