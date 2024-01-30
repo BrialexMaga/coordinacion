@@ -3,28 +3,30 @@
 {% block title %}Por Ciclo | Materia{% endblock %}
 
 {% block content %}
-    <h2> {{ title }} </h2>
+    <div class="container-fluid">
+        <h1 class="pt-3 pb-2 fs-2 text-color"> {{ title }} </h1>
 
-    {% if are_there_registers %}
-    <table>
-        <thead>
-            <th>Sección</th>
-            <th>Nombre</th>
-            <th>Código</th>
-            <th>Ordinario</th>
-            <th>Extraordinario</th>
-        </thead>
-        <tbody>
-            {% for register in registers %}
-            <tr>
-                <td> {{ register.section }} </td>
-                <td> {{ register.name }} </td>
-                <td> {{ register.code }} </td>
-                <td> {{ register.OE }} </td>
-                <td> {{ register.E }} </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+        {% if are_there_registers %}
+        <table class="table table-striped text-center">
+            <thead>
+                <th class="my-table-header">Sección</th>
+                <th class="my-table-header">Nombre</th>
+                <th class="my-table-header">Código</th>
+                <th class="my-table-header">Ordinario</th>
+                <th class="my-table-header">Extraordinario</th>
+            </thead>
+            <tbody>
+                {% for register in registers %}
+                <tr>
+                    <td> {{ register.section }} </td>
+                    <td> {{ register.name }} </td>
+                    <td> {{ register.code }} </td>
+                    <td> {{ register.OE }} </td>
+                    <td> {{ register.E }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
 {% endblock %}
