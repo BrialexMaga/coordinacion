@@ -3,68 +3,72 @@
 {% block title %}Por Ciclo{% endblock %}
 
 {% block content %}
-    <h2>Por Ciclo</h2>
+    <div class="container-fluid">
+        <h1 class="pt-3 pb-2 fs-2 text-color">Estadísticas</h1>
 
-    <table>
-        <thead>
-            <th>Clave</th>
-            <th>Materia</th>
-            <th>Promedio de reprobados por secciones</th>
-            <th>Total de Alumnos</th>
-            <th>Total de Alumnos reprobados</th>
-            <th>Porcentaje de Alumnos reprobados</th>
-        </thead>
-        <tbody>
-            {% for statistic in statistics %}
-            <tr>
-                <td> {{ statistic.key_subject }} </td>
-                <td> {{ statistic.subject }} </td>
-                <td> {{ statistic.section_fail_rate }}% </td>
-                <td> {{ statistic.total_students }} </td>
-                <td> {{ statistic.total_failed }} </td>
-                <td> {{ statistic.failed_rate }}% </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <br>
-    <br>
-    <table>
-        <thead>
-            <th>Clave</th>
-            <th>Materia</th>
-            <th>Sección</th>
-            <th>Total de Alumnos</th>
-            <th>S/D</th>
-            <th>Acreditados Ordinario</th>
-            <th>Acreditados Extraordinario</th>
-            <th>NO Acreditados Ordinario</th>
-            <th>NO Acreditados Extraordinario</th>
-            <th>% S/D</th>
-            <th>% Acreditados Ordinario</th>
-            <th>% Acreditados Extraordinario</th>
-            <th>% NO Acreditados Ordinario</th>
-            <th>% NO Acreditados Extraordinario</th>
-        </thead>
-        <tbody>
-            {% for register in registers %}
-            <tr>
-                <td> {{ register.key_subject }} </td>
-                <td> {{ register.subject }} </td>
-                <td> {{ register.section }} </td>
-                <td> {{ register.total_students }} </td>
-                <td> {{ register.SD }} </td>
-                <td> {{ register.OE }} </td>
-                <td> {{ register.E }} </td>
-                <td> {{ register.NO_OE }} </td>
-                <td> {{ register.NO_E }} </td>
-                <td> {{ register.SD_percent }}% </td>
-                <td> {{ register.OE_percent }}% </td>
-                <td> {{ register.E_percent }}% </td>
-                <td> {{ register.NO_OE_percent }}% </td>
-                <td> {{ register.NO_E_percent }}% </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <div class="stats-container">
+            <table class="table table-striped text-center">
+                <thead>
+                    <th class="my-table-header">Clave</th>
+                    <th class="my-table-header">Materia</th>
+                    <th class="my-table-header">Promedio de reprobados por secciones</th>
+                    <th class="my-table-header">Total de Alumnos</th>
+                    <th class="my-table-header">Total de Alumnos reprobados</th>
+                    <th class="my-table-header">Porcentaje de Alumnos reprobados</th>
+                </thead>
+                <tbody>
+                    {% for statistic in statistics %}
+                    <tr>
+                        <td> {{ statistic.key_subject }} </td>
+                        <td> {{ statistic.subject }} </td>
+                        <td> {{ statistic.section_fail_rate }}% </td>
+                        <td> {{ statistic.total_students }} </td>
+                        <td> {{ statistic.total_failed }} </td>
+                        <td> {{ statistic.failed_rate }}% </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <br>
+        <table class="table table-striped text-center">
+            <thead>
+                <th class="my-table-header">Clave</th>
+                <th class="my-table-header">Materia</th>
+                <th class="my-table-header">Sección</th>
+                <th class="my-table-header">Total de Alumnos</th>
+                <th class="my-table-header">S/D</th>
+                <th class="my-table-header">Acreditados Ordinario</th>
+                <th class="my-table-header">Acreditados Extraordinario</th>
+                <th class="my-table-header">NO Acreditados Ordinario</th>
+                <th class="my-table-header">NO Acreditados Extraordinario</th>
+                <th class="my-table-header">% S/D</th>
+                <th class="my-table-header">% Acreditados Ordinario</th>
+                <th class="my-table-header">% Acreditados Extraordinario</th>
+                <th class="my-table-header">% NO Acreditados Ordinario</th>
+                <th class="my-table-header">% NO Acreditados Extraordinario</th>
+            </thead>
+            <tbody>
+                {% for register in registers %}
+                <tr>
+                    <td> {{ register.key_subject }} </td>
+                    <td> {{ register.subject }} </td>
+                    <td> {{ register.section }} </td>
+                    <td> {{ register.total_students }} </td>
+                    <td> {{ register.SD }} </td>
+                    <td> {{ register.OE }} </td>
+                    <td> {{ register.E }} </td>
+                    <td> {{ register.NO_OE }} </td>
+                    <td> {{ register.NO_E }} </td>
+                    <td> {{ register.SD_percent }}% </td>
+                    <td> {{ register.OE_percent }}% </td>
+                    <td> {{ register.E_percent }}% </td>
+                    <td> {{ register.NO_OE_percent }}% </td>
+                    <td> {{ register.NO_E_percent }}% </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

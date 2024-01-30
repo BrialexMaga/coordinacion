@@ -43,5 +43,9 @@
 
 .consult-failure-container {
     background-color: #7a959e !important;
-    width:700px !important;
+    width: 700px !important;
+}
+
+.stats-container {
+    width: 85% !important;
 }
