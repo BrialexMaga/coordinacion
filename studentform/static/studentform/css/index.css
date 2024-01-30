@@ -40,3 +40,8 @@
 .text-color {
     color: #3B2B46 !important;
 }
+
+.consult-failure-container {
+    background-color: #7a959e !important;
+    width:700px !important;
+}

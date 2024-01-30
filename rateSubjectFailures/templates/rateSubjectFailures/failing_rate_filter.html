@@ -1,28 +1,83 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
 {% block title %}Indice de reprobados{% endblock %}
 
 {% block content %}
-    <h2>Indice de reprobados por materia</h2>
-    
-    <h3>Por Ciclo</h3>
-    <form method="POST" action="{% url 'cycle-page' %}">
-        {% csrf_token %}
-        {{ cycleForm.as_p }}
-        <button type="submit">Consultar</button>
-    </form>
+    <div class="container text-center">
+        <h1 class="pt-3 pb-2 fs-2 text-color">Indice de reprobados por materia</h1>
+        
+        <div class="container consult-failure-container">
+            <form method="POST" class="form" action="{% url 'cycle-page' %}" autocomplete="off">
+                {% csrf_token %}
+                <pe class="pb-4 fs-3 text-color fw-bold">Por Ciclo</pe>
+                <div class="text-start ps-3 pe-3">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            {% for field in cycleForm.visible_fields %}
+                                <div class="form-group">
+                                    {{ field|add_class:"form-select text-color" }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-lg-3 d-flex align-items-end">
+                            <button class="btn my-button-color w-100" type="submit">Consultar</button>
+                        </div>
+                    </div>
+                </div>
 
-    <h3>Por Ciclo y Materia</h3>
-    <form method="POST" action="{% url 'cycle-subject-page' %}">
-        {% csrf_token %}
-        {{ cycleRangeForm.as_p }}
-        <button type="submit">Consultar</button>
-    </form>
+                <p class="pb-3"></p>
+            </form>
+        </div>
+        <br>
 
-    <h3>Por periodo entre ciclos</h3>
-    <form method="POST" action="{% url 'cycle-range-page' %}">
-        {% csrf_token %}
-        {{ rangeForm.as_p }}
-        <button type="submit">Consultar</button>
-    </form>
-{% endblock %}
+        <div class="container consult-failure-container">
+            <form method="POST" class="form" action="{% url 'cycle-subject-page' %}" autocomplete="off">
+                {% csrf_token %}
+                <pe class="pb-4 fs-3 text-color fw-bold">Por Ciclo y Materia</pe>
+                <div class="text-start ps-3 pe-3">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            {% for field in cycleRangeForm.visible_fields %}
+                                <div class="form-group">
+                                    <p></p>
+                                    {{ field|add_class:"form-select text-color" }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-lg-3 d-flex align-items-end">
+                            <button class="btn my-button-color w-100" type="submit">Consultar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="pb-3"></p>
+            </form>
+        </div>
+        <br>
+
+        <div class="container consult-failure-container">
+            <form method="POST" class="form" action="{% url 'cycle-range-page' %}" autocomplete="off">
+                {% csrf_token %}
+                <pe class="pt-3 pb-4 fs-3 text-color fw-bold">Por periodo entre ciclos</pe>
+                <div class="text-start ps-3 pe-3">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            {% for field in rangeForm.visible_fields %}
+                                <div class="form-group">
+                                    <label for="{{ field.id_for_label }}" class="pt-2 fw-semibold text-color"> {{ field.label_tag }} </label>
+                                    {{ field|add_class:"form-select text-color" }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-lg-3 d-flex align-items-end">
+                            <button class="btn my-button-color w-100" type="submit">Consultar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="pb-3"></p>
+            </form>
+        </div>
+    </div>
+    {% endblock %}
