@@ -5,10 +5,16 @@
 .my-button-color {
     background-color: #424E5E !important;
     color: white !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.my-button-color:hover {
+    background-color: #3b2b46 !important;
 }
 
 .my-landing-container {
     height: 500px !important;
+    transition: background-color 0.2s ease !important;
 }
 
 .my-landing-container:hover {
@@ -48,4 +54,9 @@
 
 .stats-container {
     width: 85% !important;
+}
+
+.login-container {
+    background-color: #7a959e !important;
+    width: 250px !important;
 }
