@@ -26,3 +26,10 @@ class ContactForm(forms.ModelForm):
             "company": "Compañia donde trabaja", 
             "position": "Posición"
         }
+    
+    def __init__(self, *args, **kwargs):
+        super(ContactForm, self).__init__(*args, **kwargs)
+        self.fields['phone'].required = True
+        self.fields['email'].required = True
+        self.fields['udg_email'].required = True
+        self.fields['emergency_phone'].required = True
