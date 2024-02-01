@@ -15,11 +15,44 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     students = Student.objects.all()
 
-    if request.GET.get('name') or request.GET.get('code'):
+    if request.GET.get('name') or request.GET.get('code') or request.GET.get('status') or request.GET.get('admission_cycle') or request.GET.get('last_cycle'):
         name = request.GET.get('name', '')
         code = request.GET.get('code', '')
+        status = request.GET.get('status', '')
 
-        students = students.filter(name__icontains=name, code__icontains=code)
+        admission_cycle = request.GET.get('admission_cycle', '')
+        admission_period = ''
+        admission_year = ''
+        try:
+            admission_period = admission_cycle[-1]
+            int(admission_period)
+
+            admission_period = ''
+            admission_year = admission_cycle
+        except:
+            if len(admission_cycle) > 0:
+                admission_period = admission_cycle[-1]
+                admission_year = admission_cycle[:-1]
+        
+        last_cycle = request.GET.get('last_cycle', '')
+        last_period = ''
+        last_year = ''
+        try:
+            last_period = last_cycle[-1]
+            int(last_period)
+
+            last_period = ''
+            last_year = last_cycle
+        except:
+            if len(last_cycle) > 0:
+                last_period = last_cycle[-1]
+                last_year = last_cycle[:-1]
+
+        students = students.filter(name__icontains=name, 
+                                   code__icontains=code, 
+                                   status__code_name__icontains=status,
+                                   admission_cycle__year__icontains=admission_year, admission_cycle__cycle_period__icontains=admission_period,
+                                   last_cycle__year__icontains=last_year, last_cycle__cycle_period__icontains=last_period)
 
     request.session['filtered_students'] = list(students.values_list('idStudent', flat=True))
     return render(request, "studentform/index.html", {'students': students})
