@@ -14,10 +14,6 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def index(request):
     students = Student.objects.all()
-    contacts = Contact.objects.all()
-    cycles = School_Cycle.objects.all()
-    careers = Career.objects.all()
-    statuses = Status.objects.all()
 
     if request.GET.get('name') or request.GET.get('code'):
         name = request.GET.get('name', '')
@@ -25,8 +21,8 @@ def index(request):
 
         students = students.filter(name__icontains=name, code__icontains=code)
 
-    return render(request, "studentform/index.html", {'students':students, 'contacts':contacts, 
-                                                      'cycles':cycles, 'careers':careers, 'statuses':statuses})
+    request.session['filtered_students'] = list(students.values_list('idStudent', flat=True))
+    return render(request, "studentform/index.html", {'students': students})
 
 @login_required
 def exportContacts(request):
@@ -46,8 +42,9 @@ def exportContacts(request):
                      'Organization 1 - Name', 'Organization 1 - Yomi Name', 'Organization 1 - Title', 'Organization 1 - Department', 'Organization 1 - Symbol',
                      'Organization 1 - Location', 'Organization 1 - Job Description', 'Website 1 - Type', 'Website 1 - Value', 'Custom Field 1 - Type', 
                      'Custom Field 1 - Value', 'Custom Field 2 - Type', 'Custom Field 2 - Value'])
-
-    contacts = Contact.objects.all()
+    
+    filtered_students = request.session.get('filtered_students', [])
+    contacts = Contact.objects.filter(idStudent__in=filtered_students)
 
     for contact in contacts:
         # Data
