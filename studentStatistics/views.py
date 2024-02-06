@@ -40,18 +40,30 @@ def showStatistics(request, generation):
         select_last_cycle = request.GET.get('last_cycle', '')
         select_semester = request.GET.get('semester', '')
 
-        students = students.filter(status__status__icontains=select_status)
-
-        if select_last_cycle:
-            year, cycle_period = select_last_cycle[:-1], select_last_cycle[-1]
-            students = students.filter(last_cycle__year=year, last_cycle__cycle_period=cycle_period)
-        
         if select_semester:
             try:
                 filtered, registers_semesters = filterStudents(int(select_semester), registers_semesters, students)
                 students = students.filter(idStudent__in=filtered)
             except:
                 print("Error: Por favor, ingrese un valor numérico para el filtro de semestres.")
+
+        if select_last_cycle:
+            last_period = ''
+            last_year = ''
+            try:
+                last_period = select_last_cycle[-1]
+                int(last_period)
+
+                last_period = ''
+                last_year = select_last_cycle
+            except:
+                if len(select_last_cycle) > 0:
+                    last_period = select_last_cycle[-1]
+                    last_year = select_last_cycle[:-1]
+
+            students = students.filter(last_cycle__year__icontains=last_year, last_cycle__cycle_period__icontains=last_period)
+
+        students = students.filter(status__status__icontains=select_status)
 
     finish_students = students.filter(status__code_name='GD')
     graduated_students = students.filter(status__code_name='TT')
