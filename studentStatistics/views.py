@@ -4,6 +4,9 @@ from studentform.models import Student, School_Cycle, Syllabus, Semester
 from studenthistory.models import Course
 from itertools import chain
 
+from openpyxl import Workbook
+from django.http import HttpResponse
+
 from django.contrib.auth.decorators import login_required
 
 @login_required
@@ -65,6 +68,10 @@ def showStatistics(request, generation):
 
         students = students.filter(status__status__icontains=select_status)
 
+    # Save filtered students in session
+    request.session['filtered_students'] = list(students.values_list('idStudent', flat=True))
+    request.session['filtered_semesters'] = registers_semesters
+
     finish_students = students.filter(status__code_name='GD')
     graduated_students = students.filter(status__code_name='TT')
     art33_expelled_students = students.filter(status__code_name='BC')
@@ -79,6 +86,21 @@ def showStatistics(request, generation):
         finish_percent = calculate_percent(len(finish_students), len(students))
         graduated_percent = calculate_percent(len(graduated_students), len(students))
 
+    # Save statistics in session
+    request.session['statistics'] = {
+        'gen': f'{gen.year}{gen.cycle_period}',
+        'no_students': len(students),
+        'no_finished_students': len(finish_students),
+        'finish_percent': finish_percent,
+        'no_graduated': len(graduated_students),
+        'graduated_percent': graduated_percent,
+        'no_art33': len(art33_expelled_students),
+        'no_art35': len(art35_expelled_students),
+        'semesters': semesters,
+        'attached_students': attached_students,
+        'attached_percent': attached_percent
+    }
+
     return render(request, 'studentStatistics/show_student_statistics.html', 
                   {'students': students, 'cycle': gen, 'semesters': semesters, 'no_students': len(students),
                    'no_finished_students': len(finish_students), 'finish_percent': finish_percent,
@@ -87,6 +109,83 @@ def showStatistics(request, generation):
                    'semesters_list': registers_semesters, 'attached_students': attached_students,
                    'attached_percent': attached_percent})
 
+@login_required
+def exportStudentStatistics(request):
+    workbook = Workbook()
+    registers_sheet = workbook.active
+    registers_sheet.title = "Registros"
+
+    # Add headers
+    registers_data = [
+        ["Codigo", 
+         "Nombre", 
+         "Estatus", 
+         "Admision", 
+         "Ultimo Ciclo", 
+         "Semestres"],
+    ]
+
+    # Add data
+    filteredStudents = request.session.get('filtered_students', [])
+    no_semesters = request.session.get('filtered_semesters', [])
+
+    students = Student.objects.filter(idStudent__in=filteredStudents)
+    for i, student in enumerate(students):
+        registers_data.append(
+            [student.code, 
+             f'{student.name} {student.first_last_name} {student.second_last_name}', 
+             student.status.status, 
+             f'{student.admission_cycle.year}{student.admission_cycle.cycle_period}', 
+             f'{student.last_cycle.year}{student.last_cycle.cycle_period}', 
+             no_semesters[i]])
+
+    # Add data to sheet
+    for row in registers_data:
+        registers_sheet.append(row)
+
+
+    # Add statistics sheet
+    statistics_sheet = workbook.create_sheet(title="Estadisticas")
+
+    # Add headers
+    statistics = request.session.get('statistics', {})
+    statistics_data = [
+        ["Generación", 
+         "Semestres", 
+         "No. Alumnos",
+         "No. Alumnos que pertenecen",
+         "%",
+         "No. Egresados",
+         "%",
+         "No. Titulados",
+         "%",
+         "No. Bajas por Articulo 33",
+         "No. Bajas por Articulo 35"],  # Header
+    ]
+    if statistics_data:
+        statistics_data.append(
+            [statistics['gen'],
+            statistics['semesters'],
+            statistics['no_students'],
+            statistics['attached_students'],
+            f'{statistics['attached_percent']}%',
+            statistics['no_finished_students'],
+            f'{statistics['finish_percent']}%',
+            statistics['no_graduated'],
+            f'{statistics['graduated_percent']}%',
+            statistics['no_art33'],
+            statistics['no_art35']]
+        )
+
+    # Add data
+    for row in statistics_data:
+        statistics_sheet.append(row)
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=estadisticas_estudiantes.xlsx'
+    workbook.save(response)
+
+    return response
 
 
 
