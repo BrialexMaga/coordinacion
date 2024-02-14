@@ -134,7 +134,10 @@ def exportStudentData(request, idStudent):
 @login_required
 def showContact(request, idStudent):
     student = get_object_or_404(Student, pk=idStudent)
-    contact = student.contact
+    try:
+        contact = student.contact
+    except Contact.DoesNotExist:
+        contact = None
 
     return render(request, 'studentform/student_contact.html', {'student': student, 'contact': contact})
 

@@ -15,7 +15,13 @@
                             <pe class="ps-2">Teléfono</pe>
                         </th>
                     </tr>
-                    <tr><td class="pb-2 ps-4">{{ contact.phone }}</td></tr>
+                    <tr><td class="pb-2 ps-4">
+                        {% if contact.phone %}
+                            {{ contact.phone }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td></tr>
                     
                     <tr>
                         <th class="fs-5">
@@ -23,7 +29,13 @@
                             <pe class="ps-2">Correo Electronico</pe>
                         </th>
                     </tr>
-                    <tr><td class="pb-2  ps-4">{{ contact.email }}</td></tr>
+                    <tr><td class="pb-2  ps-4">
+                        {% if contact.email %}
+                            {{ contact.email }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td></tr>
                     
                     <tr>
                         <th class="fs-5">
@@ -31,7 +43,13 @@
                             <pe class="ps-2">Correo de UDG</pe>
                         </th>
                     </tr>
-                    <tr><td class="pb-2 ps-4">{{ contact.udg_email }}</td></tr>
+                    <tr><td class="pb-2 ps-4">
+                        {% if contact.udg_email %}
+                            {{ contact.udg_email }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td></tr>
                     
                     <tr>
                         <th class="fs-5">
@@ -39,7 +57,13 @@
                             <pe class="ps-2">Teléfono de Emergencia</pe>
                         </th>
                     </tr>
-                    <tr><td class="pb-2 ps-4">{{ contact.emergency_phone }}</td></tr>
+                    <tr><td class="pb-2 ps-4">
+                        {% if contact.emergency_phone %}
+                            {{ contact.emergency_phone }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td></tr>
                     
                     <tr>
                         <th class="fs-5">
