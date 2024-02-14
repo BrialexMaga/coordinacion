@@ -61,6 +61,9 @@ def byCycleRangeFilter(request):
             courses = form.filter_courses()
             registers = makebyCycleRangeRegisters(courses)
 
+            # Save the information in session variables
+            request.session['registers'] = registers
+
             return render(request, 'rateSubjectFailures/by_cycle_range.html', 
                           {'courses': courses, 'registers': registers})
 
@@ -329,6 +332,45 @@ def exportByCycleSubject(request):
         registers_sheet.append(row)
 
     title = request.session.get('title', "No hay registros para mostrar") # Title has already been set in byCycleSubjectFilter
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f"attachment; filename={title}.xlsx"
+    workbook.save(response)
+
+    return response
+
+@login_required
+def exportByCycleRange(request):
+    workbook = Workbook()
+    registers_sheet = workbook.active
+    registers_sheet.title = "Registros"
+
+    # Add headers
+    registers_data = [
+        ["Clave",
+         "Materia",
+         "Total de alumnos",
+         "Total de alumnos reprobados",
+         "Porcentaje de alumnos reprobados"],
+    ]
+
+    # Add data
+    registers = request.session.get('registers', [])
+
+    for register in registers:
+        registers_data.append(
+            [register['key_subject'],
+             register['subject'],
+             register['total_students'],
+             register['failed_students'],
+             f'{register["failed_rate"]}%']
+        )
+
+    # Add data to sheet
+    for row in registers_data:
+        registers_sheet.append(row)
+
+    #title = request.session.get('title', "No hay registros para mostrar")
+    title = 'Rango de ciclos'
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f"attachment; filename={title}.xlsx"
     workbook.save(response)
