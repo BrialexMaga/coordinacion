@@ -25,13 +25,14 @@ def byCycleFilter(request):
         if form.is_valid():
             courses = form.filter_courses()
             statistics, registers = makeByCycleStatistics(courses)
+            title = f'Ciclo {form.cleaned_data.get("school_cycle")}'
 
             # Save the information in session variables
             request.session['statistics'] = statistics
             request.session['registers'] = registers
 
             return render(request, 'rateSubjectFailures/by_cycle.html', 
-                          {'statistics': statistics, 'registers': registers})
+                          {'statistics': statistics, 'registers': registers, 'title': title})
 
 @login_required
 def byCycleSubjectFilter(request):
