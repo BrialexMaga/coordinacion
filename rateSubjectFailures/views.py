@@ -40,10 +40,7 @@ def byCycleSubjectFilter(request):
         form = byCycleAndSubjectForm(request.POST)
         if form.is_valid():
             courses = form.filter_courses()
-            if courses.exists():
-                title = f'{courses.first().school_cycle} - {courses.first().section.subject}'
-            else:
-                title = "No hay registros para mostrar"
+            title = f'{form.cleaned_data.get("school_cycle")} - {form.cleaned_data.get("subject")}'
 
             registers = makeByCycleSubjectRegisters(courses)
 
