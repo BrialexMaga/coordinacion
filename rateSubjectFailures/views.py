@@ -45,6 +45,10 @@ def byCycleSubjectFilter(request):
                 title = "No hay registros para mostrar"
 
             registers = makeByCycleSubjectRegisters(courses)
+
+            # Save the information in session variables
+            request.session['registers'] = registers
+            request.session['title'] = title
             
             return render(request, 'rateSubjectFailures/by_cycle_subject.html', 
                           {'registers': registers, 'title': title, 'are_there_registers': len(registers) > 0})
@@ -289,6 +293,44 @@ def exportByCycle(request):
     
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=Indice de reprobados por ciclo.xlsx'
+    workbook.save(response)
+
+    return response
+
+@login_required
+def exportByCycleSubject(request):
+    workbook = Workbook()
+    registers_sheet = workbook.active
+    registers_sheet.title = "Registros"
+
+    # Add headers
+    registers_data = [
+        ["Sección",
+         "Nombre",
+         "Código",
+         "Ordinario",
+         "Extraordinario"],
+    ]
+
+    # Add data
+    registers = request.session.get('registers', [])
+
+    for register in registers:
+        registers_data.append(
+            [register['section'],
+             register['name'],
+             register['code'],
+             register['OE'],
+             register['E']]
+        )
+
+    # Add data to sheet
+    for row in registers_data:
+        registers_sheet.append(row)
+
+    title = request.session.get('title', "No hay registros para mostrar") # Title has already been set in byCycleSubjectFilter
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f"attachment; filename={title}.xlsx"
     workbook.save(response)
 
     return response
