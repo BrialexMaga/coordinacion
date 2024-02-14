@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from .forms import byCycleForm, byCycleAndSubjectForm, byCycleRangeForm
 from studentform.models import Subject
 from studenthistory.models import Section
-
+from openpyxl import Workbook
+from django.http import HttpResponse
 from django.db.models import IntegerField
 from django.db.models.functions import Cast
 
@@ -24,6 +25,10 @@ def byCycleFilter(request):
         if form.is_valid():
             courses = form.filter_courses()
             statistics, registers = makeByCycleStatistics(courses)
+
+            # Save the information in session variables
+            request.session['statistics'] = statistics
+            request.session['registers'] = registers
 
             return render(request, 'rateSubjectFailures/by_cycle.html', 
                           {'statistics': statistics, 'registers': registers})
@@ -204,3 +209,86 @@ def makebyCycleRangeRegisters(courses):
                           'failed_students': subject_courses_failed, 'failed_rate': calculatePercent(subject_courses_failed, total_students)})
         
     return registers
+
+@login_required
+def exportByCycle(request):
+    workbook = Workbook()
+    registers_sheet = workbook.active
+    registers_sheet.title = "Registros"
+
+    # Add headers
+    registers_data = [
+        ["Clave", 
+         "Materia", 
+         "Sección", 
+         "Total Alumnos", 
+         "S/D", 
+         "Acreditados Ordinario",
+         "Acreditados Extraordinario",
+         "No Acreditados Ordinario",
+         "No Acreditados Extraordinario",
+         "% S/D",
+         "% Acreditados Ordinario",
+         "% Acreditados Extraordinario",
+         "% No Acreditados Ordinario",
+         "% No Acreditados Extraordinario"],
+    ]
+
+    # Add data
+    registers = request.session.get('registers', [])
+
+    for register in registers:
+        registers_data.append(
+            [register['key_subject'], 
+             register['subject'], 
+             register['section'], 
+             register['total_students'], 
+             register['SD'], 
+             register['OE'], 
+             register['E'], 
+             register['NO_OE'], 
+             register['NO_E'], 
+             register['SD_percent'], 
+             register['OE_percent'], 
+             register['E_percent'], 
+             register['NO_OE_percent'], 
+             register['NO_E_percent']]
+        )
+
+    # Add data to sheet
+    for row in registers_data:
+        registers_sheet.append(row)
+
+
+    # Add statistics sheet
+    statistics_sheet = workbook.create_sheet(title="Estadisticas")
+
+    # Add headers
+    statistics = request.session.get('statistics', {})
+    statistics_data = [
+        ["Clave",
+         "Materia",
+         "Promedio de reprobados por secciones",
+         "Total de alumnos",
+         "Total de alumnos reprobados",
+         "Porcentaje de alumnos reprobados"],  # Header
+    ]
+    for statistics_info in statistics:
+        statistics_data.append(
+            [statistics_info['key_subject'],
+             statistics_info['subject'],
+             statistics_info['section_fail_rate'],
+             statistics_info['total_students'],
+             statistics_info['total_failed'],
+             f'{statistics_info["failed_rate"]}%']
+        )
+
+    # Add data
+    for row in statistics_data:
+        statistics_sheet.append(row)
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=Indice de reprobados por ciclo.xlsx'
+    workbook.save(response)
+
+    return response
