@@ -61,11 +61,17 @@ def byCycleRangeFilter(request):
             courses = form.filter_courses()
             registers = makebyCycleRangeRegisters(courses)
 
+            beginning = form.cleaned_data.get('start_cycle')
+            end = form.cleaned_data.get('end_cycle')
+
+            title = f'{beginning} - {end}'
+
             # Save the information in session variables
             request.session['registers'] = registers
+            request.session['title'] = title
 
             return render(request, 'rateSubjectFailures/by_cycle_range.html', 
-                          {'courses': courses, 'registers': registers})
+                          {'courses': courses, 'registers': registers, "title": title})
 
 
 
@@ -369,8 +375,7 @@ def exportByCycleRange(request):
     for row in registers_data:
         registers_sheet.append(row)
 
-    #title = request.session.get('title', "No hay registros para mostrar")
-    title = 'Rango de ciclos'
+    title = request.session.get('title', "Sin registros")
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f"attachment; filename={title}.xlsx"
     workbook.save(response)
