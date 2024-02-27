@@ -9,6 +9,8 @@ from django.http import HttpResponse
 
 from django.contrib.auth.decorators import login_required
 
+from django.db import connection
+
 @login_required
 def filterGeneration(request):
     if request.method == 'POST':
@@ -26,7 +28,7 @@ def showStatistics(request, generation):
     calculate_percent = lambda x, total: int(x * 100 / total)
 
     gen = School_Cycle.objects.get(idCycle=generation)
-    students = Student.objects.filter(admission_cycle=gen)
+    students = Student.objects.select_related('admission_cycle', 'last_cycle').filter(admission_cycle=gen)
 
     registers_semesters = []
     last = [0, None]
@@ -101,6 +103,7 @@ def showStatistics(request, generation):
         'attached_percent': attached_percent
     }
 
+    #print(len(connection.queries))
     return render(request, 'studentStatistics/show_student_statistics.html', 
                   {'students': students, 'cycle': gen, 'semesters': semesters, 'no_students': len(students),
                    'no_finished_students': len(finish_students), 'finish_percent': finish_percent,
@@ -129,7 +132,7 @@ def exportStudentStatistics(request):
     filteredStudents = request.session.get('filtered_students', [])
     no_semesters = request.session.get('filtered_semesters', [])
 
-    students = Student.objects.filter(idStudent__in=filteredStudents)
+    students = Student.objects.select_related('admission_cycle', 'last_cycle').filter(idStudent__in=filteredStudents)
     for i, student in enumerate(students):
         registers_data.append(
             [student.code, 
@@ -212,6 +215,7 @@ def filterStudents(filter, semesters, students):
 
     return filtered_students, semesters_list
 
+# Needs to be optimized
 def extractAttachedStudents(students, semesters):
     syllabus = students.first().syllabus
     syllabus_plan = Semester.objects.filter(syllabus=syllabus)
@@ -230,7 +234,7 @@ def extractAttachedStudents(students, semesters):
             j = 0
             while j < len(should_have_subjects):
                 subject = should_have_subjects[j]
-                courses = Course.objects.filter(student=student, section__subject=subject).order_by('school_cycle__year','school_cycle__cycle_period', 'grade_period')
+                courses = Course.objects.select_related('section__subject').filter(student=student, section__subject=subject).order_by('school_cycle__year','school_cycle__cycle_period', 'grade_period')
                 if len(courses) < 1:
                     is_attached = False
                     break
