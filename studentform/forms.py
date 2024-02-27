@@ -13,6 +13,8 @@ class StudentForm(forms.ModelForm):
         }
     
 class ContactForm(forms.ModelForm):
+    url_socialnet = forms.CharField(required=False)
+
     class Meta:
         model = Contact
         fields = ["phone", "email", "udg_email", "emergency_phone", "url_socialnet",
@@ -33,3 +35,10 @@ class ContactForm(forms.ModelForm):
         self.fields['email'].required = True
         self.fields['udg_email'].required = True
         self.fields['emergency_phone'].required = True
+    
+    def clean_url_socialnet(self):
+        url = self.cleaned_data.get('url_socialnet')
+        if url and not url.startswith(('http://', 'https://')):
+            url = f'http://{url}'
+        
+        return url
