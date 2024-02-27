@@ -9,6 +9,8 @@ from django.db.models.functions import Cast
 
 from django.contrib.auth.decorators import login_required
 
+from django.db import connection
+
 @login_required
 def filterRateSubjectFailures(request):
     form = byCycleAndSubjectForm()
@@ -78,22 +80,24 @@ def byCycleRangeFilter(request):
 
 def makeByCycleStatistics(courses):
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
+    subjects = {subject.idSubject: subject for subject in Subject.objects.filter(idSubject__in=subject_indexes)}
 
     statistics = []
     registers = []
     for subject_index in subject_indexes:
-        subject = Subject.objects.get(idSubject=subject_index)
+        subject = subjects[subject_index]
         subject_courses = courses.filter(section__subject__idSubject=subject_index).order_by('section__section', 'student__idStudent', 
                                                                                                 'grade_period__code_name')
 
         section_indexes = subject_courses.values_list('section__idSection', flat=True).distinct()
         section_indexes = list(set(section_indexes))
+        sections = {section.idSection: section for section in Section.objects.filter(idSection__in=section_indexes)}
         
         section_fail_rates = []
         for section_index in section_indexes:
             calculatePercent = lambda x, y: round(x / y * 100, 2) if y else 0
             section_courses = subject_courses.filter(section__idSection=section_index)
-            section = Section.objects.get(idSection=section_index)
+            section = sections[section_index]
 
             total_students = section_courses.values_list('student__idStudent', flat=True).distinct().count()
 
@@ -135,6 +139,8 @@ def makeByCycleStatistics(courses):
             failed_rate = round(failed_rate, 2)
 
             section_fail_rates.append(failed_rate)
+
+            #print(len(connection.queries))
             registers.append({'key_subject': subject.key_subject, 'subject': subject.name, 'section': section.section, 'total_students': total_students,
                               'SD': no_sd, 'OE': no_passed_ordinary, 'E': no_passed_extraordinary, 'NO_OE': no_failed_ordinary,
                               'NO_E': no_failed_extraordinary, 'SD_percent': SD_percent, 'OE_percent': OE_percent, 'E_percent': E_percent,
@@ -193,10 +199,11 @@ def makeByCycleSubjectRegisters(courses):
 def makebyCycleRangeRegisters(courses):
     calculatePercent = lambda x, y: round(x / y * 100, 2) if y else 0
     subject_indexes = courses.values_list('section__subject__idSubject', flat=True).distinct()
+    subjects = {subject.idSubject: subject for subject in Subject.objects.filter(idSubject__in=subject_indexes)}
 
     registers = []
     for subject_index in subject_indexes:
-        subject = Subject.objects.get(idSubject=subject_index)
+        subject = subjects[subject_index]
         subject_courses = courses.filter(section__subject__idSubject=subject_index).order_by('section__section', 'student__idStudent', 
                                                                                                 'grade_period__code_name')
         
@@ -218,7 +225,8 @@ def makebyCycleRangeRegisters(courses):
 
         registers.append({'key_subject': subject.key_subject, 'subject': subject.name, 'total_students': total_students,
                           'failed_students': subject_courses_failed, 'failed_rate': calculatePercent(subject_courses_failed, total_students)})
-        
+    
+    #print(len(connection.queries))
     return registers
 
 @login_required
