@@ -11,6 +11,9 @@ import csv
 
 from django.contrib.auth.decorators import login_required
 
+def admin_users(user):
+    return user.groups.filter(name='Administradores').exists()
+
 @login_required
 def index(request):
     students = Student.objects.all()
@@ -55,7 +58,11 @@ def index(request):
                                    last_cycle__year__icontains=last_year, last_cycle__cycle_period__icontains=last_period)
 
     request.session['filtered_students'] = list(students.values_list('idStudent', flat=True))
-    return render(request, "studentform/index.html", {'students': students})
+
+    if admin_users(request.user):
+        return render(request, "studentform/index.html", {'students': students})
+    else:
+        return render(request, 'studentform/common_user_student_contact.html', {'student': None, 'contact': None})
 
 @login_required
 def exportContacts(request):

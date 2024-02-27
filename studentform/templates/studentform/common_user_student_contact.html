@@ -1,0 +1,124 @@
+{% extends 'common_user_base.html' %}
+
+{% block title %}Ver Contacto{% endblock %}
+
+{% load static %}
+{% block content %}
+    <div class="container pt-3 my-container-config">
+        <div class="row">
+            <div class="border border-black text-center">
+                <h2 class="pb-2 pt-1 fs-3">{{ student.name }} {{ student.first_last_name }} {{ student.second_last_name }}</h2> 
+                <table class="mx-auto text-start pb-2">
+                    <tr>
+                        <th class="fs-5">
+                            <img style="width: 18px; height: 18px;" src="{% static 'img/phone.png' %}">
+                            <pe class="ps-2">Teléfono</pe>
+                        </th>
+                    </tr>
+                    <tr><td class="pb-2 ps-4">
+                        {% if contact.phone %}
+                            {{ contact.phone }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td></tr>
+                    
+                    <tr>
+                        <th class="fs-5">
+                            <img style="width: 20px; height: 20px;" src="{% static 'img/email.png' %}">
+                            <pe class="ps-2">Correo Electronico</pe>
+                        </th>
+                    </tr>
+                    <tr><td class="pb-2  ps-4">
+                        {% if contact.email %}
+                            {{ contact.email }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td></tr>
+                    
+                    <tr>
+                        <th class="fs-5">
+                            <img style="width: 20px; height: 20px;" src="{% static 'img/email.png' %}">
+                            <pe class="ps-2">Correo de UDG</pe>
+                        </th>
+                    </tr>
+                    <tr><td class="pb-2 ps-4">
+                        {% if contact.udg_email %}
+                            {{ contact.udg_email }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td></tr>
+                    
+                    <tr>
+                        <th class="fs-5">
+                            <img style="width: 20px; height: 20px;" src="{% static 'img/phone.png' %}">
+                            <pe class="ps-2">Teléfono de Emergencia</pe>
+                        </th>
+                    </tr>
+                    <tr><td class="pb-2 ps-4">
+                        {% if contact.emergency_phone %}
+                            {{ contact.emergency_phone }}
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td></tr>
+                    
+                    <tr>
+                        <th class="fs-5">
+                            <img style="width: 20px; height: 20px;" src="{% static 'img/linkedin.png' %}">
+                            <pe class="ps-2">Red social</pe>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class="pb-2  ps-4">
+                            {% if contact.url_socialnet %}
+                                <a class="link-dark link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="{{ contact.url_socialnet }}">{{ contact.url_socialnet }}</a>
+                            {% else %}
+                                No disponible
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th class="fs-5">
+                            <img style="width: 20px; height: 20px;" src="{% static 'img/company.png' %}">
+                            <pe class="ps-2">Empresa donde trabaja</pe>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class="pb-2  ps-4">
+                            {% if contact.company %}
+                                {{ contact.company }}
+                            {% else %}
+                                No disponible
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th class="fs-5">
+                            <img style="width: 20px; height: 20px;" src="{% static 'img/employee.png' %}">
+                            <pe class="ps-2">Posición</pe>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class="pb-2  ps-4">
+                            {% if contact.position %}
+                                {{ contact.position }}
+                            {% else %}
+                                No disponible
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="text-center pt-2 pb-3">
+                    <a class="btn text-white fw-semibold my-button-color" href="{% url 'landing-page' %}">Regresar al Inicio</a>
+                    <a class="btn text-white fw-semibold my-button-color" href=#>Actualizar Contacto</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
