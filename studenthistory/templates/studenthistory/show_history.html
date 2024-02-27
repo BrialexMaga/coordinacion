@@ -2,6 +2,7 @@
 
 {% block title %}Historial{% endblock %}
 
+{% load course_filters %}
 {% block content %}
     <div class="container-fluid">
         <p class="pt-3"></p>
@@ -97,10 +98,10 @@
                                     <td> {{ course.section.subject.name }} </td>
                                     <td> {{ course.grade }} </td>
                                     <td> {{ course.grade_period }} </td>
-                                    {% if course.grade > '59'%}
-                                        <td> {{ course.section.subject.credits }} </td>
-                                    {% else %}
+                                    {% if course.grade|is_failed %}
                                         <td> 0 </td>
+                                    {% else %}
+                                        <td> {{ course.section.subject.credits }} </td>
                                     {% endif %}
                                     <td> {{ course.upload_date }} </td>
                                 </tr>
