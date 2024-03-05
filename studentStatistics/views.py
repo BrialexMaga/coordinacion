@@ -10,6 +10,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 from django.db import connection
+from django.db.models.functions import Cast
+from django.db.models import IntegerField
 
 @login_required
 def filterGeneration(request):
@@ -217,9 +219,23 @@ def filterStudents(filter, semesters, students):
 
 # Needs to be optimized
 def extractAttachedStudents(students, semesters):
+    def extractOptionalSubjects(subjects):
+        optional_subjects = list(filter(lambda subject: "OPTATIVA".lower() in subject.name.lower(), subjects))
+        
+        return len(optional_subjects)
+    
+    def getOptionalSubjects(passed_subjects, syllabus_subjects):
+        passed_subjects_set = set(passed_subjects)
+        optional_subjects = passed_subjects_set - syllabus_subjects
+
+        return list(optional_subjects)
+
     syllabus = students.first().syllabus
     syllabus_plan = Semester.objects.filter(syllabus=syllabus)
     attached_students = 0
+
+    syllabus_subjects = set([semester.subject.idSubject for semester in syllabus_plan])
+
     for i, student in enumerate(students):
         is_attached = True
         current_semester = semesters[i]
@@ -230,20 +246,41 @@ def extractAttachedStudents(students, semesters):
         else:
             current_plan = syllabus_plan.filter(number__lte=current_semester).order_by('number')
             should_have_subjects = list([semester.subject for semester in current_plan])
+            
+            # Extract optional subjects needed in the syllabus
+            current_needed_optional_subjects = extractOptionalSubjects(should_have_subjects)
 
-            j = 0
-            while j < len(should_have_subjects):
-                subject = should_have_subjects[j]
-                courses = Course.objects.select_related('section__subject').filter(student=student, section__subject=subject).order_by('school_cycle__year','school_cycle__cycle_period', 'grade_period')
-                if len(courses) < 1:
-                    is_attached = False
-                    break
-                else:
-                    if courses.last().grade == 'SD' or int(courses.last().grade) < 60:
+            # Extract passed subjects by the student
+            passed_subjects = Course.objects.select_related('section__subject').exclude(grade__in=['SD']).annotate(
+                    grade_int=Cast('grade', IntegerField())
+                ).filter(student=student, grade_int__gte=60).values_list('section__subject', flat=True)
+
+            # Extract optional subjects taken by the student
+            passed_optional_subjects = getOptionalSubjects(passed_subjects, syllabus_subjects)
+
+            # Check if the student has all the optional subjects needed
+            has_all_optional_subjects = len(passed_optional_subjects) >= current_needed_optional_subjects
+
+            if not has_all_optional_subjects:
+                is_attached = False
+            else:
+                j = 0
+                while j < len(should_have_subjects):
+                    subject = should_have_subjects[j]
+                    if "OPTATIVA".lower() in subject.name.lower():
+                        j += 1
+                        continue
+
+                    courses = Course.objects.select_related('section__subject').filter(student=student, section__subject=subject).order_by('school_cycle__year','school_cycle__cycle_period', 'grade_period')
+                    if not courses:
                         is_attached = False
                         break
-                
-                j += 1
+                    else:
+                        if courses.last().grade == 'SD' or int(courses.last().grade) < 60:
+                            is_attached = False
+                            break
+                    
+                    j += 1
         
         if is_attached:
             attached_students += 1
