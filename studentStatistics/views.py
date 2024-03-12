@@ -4,7 +4,14 @@ from studentform.models import Student, School_Cycle, Syllabus, Semester
 from studenthistory.models import Course
 from itertools import chain
 
+from openpyxl import Workbook
+from django.http import HttpResponse
+
 from django.contrib.auth.decorators import login_required
+
+from django.db import connection
+from django.db.models.functions import Cast
+from django.db.models import IntegerField
 
 @login_required
 def filterGeneration(request):
@@ -23,7 +30,7 @@ def showStatistics(request, generation):
     calculate_percent = lambda x, total: int(x * 100 / total)
 
     gen = School_Cycle.objects.get(idCycle=generation)
-    students = Student.objects.filter(admission_cycle=gen)
+    students = Student.objects.select_related('admission_cycle', 'last_cycle').filter(admission_cycle=gen)
 
     registers_semesters = []
     last = [0, None]
@@ -40,18 +47,34 @@ def showStatistics(request, generation):
         select_last_cycle = request.GET.get('last_cycle', '')
         select_semester = request.GET.get('semester', '')
 
-        students = students.filter(status__status__icontains=select_status)
-
-        if select_last_cycle:
-            year, cycle_period = select_last_cycle[:-1], select_last_cycle[-1]
-            students = students.filter(last_cycle__year=year, last_cycle__cycle_period=cycle_period)
-        
         if select_semester:
             try:
                 filtered, registers_semesters = filterStudents(int(select_semester), registers_semesters, students)
                 students = students.filter(idStudent__in=filtered)
             except:
                 print("Error: Por favor, ingrese un valor numérico para el filtro de semestres.")
+
+        if select_last_cycle:
+            last_period = ''
+            last_year = ''
+            try:
+                last_period = select_last_cycle[-1]
+                int(last_period)
+
+                last_period = ''
+                last_year = select_last_cycle
+            except:
+                if len(select_last_cycle) > 0:
+                    last_period = select_last_cycle[-1]
+                    last_year = select_last_cycle[:-1]
+
+            students = students.filter(last_cycle__year__icontains=last_year, last_cycle__cycle_period__icontains=last_period)
+
+        students = students.filter(status__status__icontains=select_status)
+
+    # Save filtered students in session
+    request.session['filtered_students'] = list(students.values_list('idStudent', flat=True))
+    request.session['filtered_semesters'] = registers_semesters
 
     finish_students = students.filter(status__code_name='GD')
     graduated_students = students.filter(status__code_name='TT')
@@ -67,6 +90,22 @@ def showStatistics(request, generation):
         finish_percent = calculate_percent(len(finish_students), len(students))
         graduated_percent = calculate_percent(len(graduated_students), len(students))
 
+    # Save statistics in session
+    request.session['statistics'] = {
+        'gen': f'{gen.year}{gen.cycle_period}',
+        'no_students': len(students),
+        'no_finished_students': len(finish_students),
+        'finish_percent': finish_percent,
+        'no_graduated': len(graduated_students),
+        'graduated_percent': graduated_percent,
+        'no_art33': len(art33_expelled_students),
+        'no_art35': len(art35_expelled_students),
+        'semesters': semesters,
+        'attached_students': attached_students,
+        'attached_percent': attached_percent
+    }
+
+    #print(len(connection.queries))
     return render(request, 'studentStatistics/show_student_statistics.html', 
                   {'students': students, 'cycle': gen, 'semesters': semesters, 'no_students': len(students),
                    'no_finished_students': len(finish_students), 'finish_percent': finish_percent,
@@ -75,6 +114,83 @@ def showStatistics(request, generation):
                    'semesters_list': registers_semesters, 'attached_students': attached_students,
                    'attached_percent': attached_percent})
 
+@login_required
+def exportStudentStatistics(request):
+    workbook = Workbook()
+    registers_sheet = workbook.active
+    registers_sheet.title = "Registros"
+
+    # Add headers
+    registers_data = [
+        ["Codigo", 
+         "Nombre", 
+         "Estatus", 
+         "Admision", 
+         "Ultimo Ciclo", 
+         "Semestres"],
+    ]
+
+    # Add data
+    filteredStudents = request.session.get('filtered_students', [])
+    no_semesters = request.session.get('filtered_semesters', [])
+
+    students = Student.objects.select_related('admission_cycle', 'last_cycle').filter(idStudent__in=filteredStudents)
+    for i, student in enumerate(students):
+        registers_data.append(
+            [student.code, 
+             f'{student.name} {student.first_last_name} {student.second_last_name}', 
+             student.status.status, 
+             f'{student.admission_cycle.year}{student.admission_cycle.cycle_period}', 
+             f'{student.last_cycle.year}{student.last_cycle.cycle_period}', 
+             no_semesters[i]])
+
+    # Add data to sheet
+    for row in registers_data:
+        registers_sheet.append(row)
+
+
+    # Add statistics sheet
+    statistics_sheet = workbook.create_sheet(title="Estadisticas")
+
+    # Add headers
+    statistics = request.session.get('statistics', {})
+    statistics_data = [
+        ["Generación", 
+         "Semestres", 
+         "No. Alumnos",
+         "No. Alumnos que pertenecen",
+         "%",
+         "No. Egresados",
+         "%",
+         "No. Titulados",
+         "%",
+         "No. Bajas por Articulo 33",
+         "No. Bajas por Articulo 35"],  # Header
+    ]
+    if statistics_data:
+        statistics_data.append(
+            [statistics['gen'],
+            statistics['semesters'],
+            statistics['no_students'],
+            statistics['attached_students'],
+            f'{statistics['attached_percent']}%',
+            statistics['no_finished_students'],
+            f'{statistics['finish_percent']}%',
+            statistics['no_graduated'],
+            f'{statistics['graduated_percent']}%',
+            statistics['no_art33'],
+            statistics['no_art35']]
+        )
+
+    # Add data
+    for row in statistics_data:
+        statistics_sheet.append(row)
+    
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=estadisticas_estudiantes.xlsx'
+    workbook.save(response)
+
+    return response
 
 
 
@@ -101,10 +217,25 @@ def filterStudents(filter, semesters, students):
 
     return filtered_students, semesters_list
 
+# Needs to be optimized
 def extractAttachedStudents(students, semesters):
+    def extractOptionalSubjects(subjects):
+        optional_subjects = list(filter(lambda subject: "OPTATIVA".lower() in subject.name.lower(), subjects))
+        
+        return len(optional_subjects)
+    
+    def getOptionalSubjects(passed_subjects, syllabus_subjects):
+        passed_subjects_set = set(passed_subjects)
+        optional_subjects = passed_subjects_set - syllabus_subjects
+
+        return list(optional_subjects)
+
     syllabus = students.first().syllabus
     syllabus_plan = Semester.objects.filter(syllabus=syllabus)
     attached_students = 0
+
+    syllabus_subjects = set([semester.subject.idSubject for semester in syllabus_plan])
+
     for i, student in enumerate(students):
         is_attached = True
         current_semester = semesters[i]
@@ -115,20 +246,41 @@ def extractAttachedStudents(students, semesters):
         else:
             current_plan = syllabus_plan.filter(number__lte=current_semester).order_by('number')
             should_have_subjects = list([semester.subject for semester in current_plan])
+            
+            # Extract optional subjects needed in the syllabus
+            current_needed_optional_subjects = extractOptionalSubjects(should_have_subjects)
 
-            j = 0
-            while j < len(should_have_subjects):
-                subject = should_have_subjects[j]
-                courses = Course.objects.filter(student=student, section__subject=subject).order_by('school_cycle__year','school_cycle__cycle_period', 'grade_period')
-                if len(courses) < 1:
-                    is_attached = False
-                    break
-                else:
-                    if courses.last().grade == 'SD' or int(courses.last().grade) < 60:
+            # Extract passed subjects by the student
+            passed_subjects = Course.objects.select_related('section__subject').exclude(grade__in=['SD']).annotate(
+                    grade_int=Cast('grade', IntegerField())
+                ).filter(student=student, grade_int__gte=60).values_list('section__subject', flat=True)
+
+            # Extract optional subjects taken by the student
+            passed_optional_subjects = getOptionalSubjects(passed_subjects, syllabus_subjects)
+
+            # Check if the student has all the optional subjects needed
+            has_all_optional_subjects = len(passed_optional_subjects) >= current_needed_optional_subjects
+
+            if not has_all_optional_subjects:
+                is_attached = False
+            else:
+                j = 0
+                while j < len(should_have_subjects):
+                    subject = should_have_subjects[j]
+                    if "OPTATIVA".lower() in subject.name.lower():
+                        j += 1
+                        continue
+
+                    courses = Course.objects.select_related('section__subject').filter(student=student, section__subject=subject).order_by('school_cycle__year','school_cycle__cycle_period', 'grade_period')
+                    if not courses:
                         is_attached = False
                         break
-                
-                j += 1
+                    else:
+                        if courses.last().grade == 'SD' or int(courses.last().grade) < 60:
+                            is_attached = False
+                            break
+                    
+                    j += 1
         
         if is_attached:
             attached_students += 1

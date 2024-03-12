@@ -13,6 +13,8 @@ import pickle
 import pandas as pd
 import numpy as np
 
+from django.db import connection
+
 @login_required
 def searchPage(request):
     if request.method == 'POST':
@@ -20,8 +22,8 @@ def searchPage(request):
         if form.is_valid():
             student_code = form.cleaned_data['student_code']
             try:
-                student = Student.objects.get(code=student_code)
-                courses = Course.objects.filter(student=student).order_by('school_cycle__year', 'school_cycle__cycle_period', 
+                student = Student.objects.select_related('idCareer').get(code=student_code)
+                courses = Course.objects.select_related('student', 'school_cycle', 'section__subject').filter(student=student).order_by('school_cycle__year', 'school_cycle__cycle_period', 
                                                                           'section__subject__key_subject', 'grade_period')
                 career = Career.objects.get(idCareer=student.idCareer.idCareer)
 
@@ -117,7 +119,11 @@ def extractRiskSubjects(courses):
 
     risk_courses = []
     for subject_index in subject_indexes:
-        subject_info = Subject.objects.get(idSubject=subject_index)
+        subject_ids = courses.values_list('section__subject__idSubject', flat=True).distinct()
+        subjects = {subject.idSubject: subject for subject in Subject.objects.filter(idSubject__in=subject_ids)}
+
+        #subject_info = Subject.objects.get(idSubject=subject_index)
+        subject_info = subjects[subject_index]
         subject_courses = courses.filter(section__subject__idSubject=subject_index).order_by('school_cycle__year',
                                                                                              'school_cycle__cycle_period',
                                                                                              'grade_period')

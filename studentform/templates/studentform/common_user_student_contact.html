@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'common_user_base.html' %}
 
 {% block title %}Ver Contacto{% endblock %}
 
@@ -115,11 +115,8 @@
                 </table>
 
                 <div class="text-center pt-2 pb-3">
-                    <a class="btn text-white fw-semibold my-button-color" href="{% url 'contacts' %}">Regresar a los contactos</a>
-                    <a class="btn text-white fw-semibold my-button-color" href="{% url 'export-student-contact' idStudent=student.idStudent %}">
-                        <img style="width: 20px; height: 20px;" src="{% static 'img/excel.png' %}">
-                        <pe class="ps-2">Exportar Contacto</pe>
-                    </a>
+                    <a class="btn text-white fw-semibold my-button-color" href="{% url 'landing-page' %}">Regresar al Inicio</a>
+                    <a class="btn text-white fw-semibold my-button-color" href=#>Actualizar Contacto</a>
                 </div>
             </div>
         </div>

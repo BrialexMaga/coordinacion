@@ -6,10 +6,10 @@
 {% block content %}
     <div class="container-fluid">
         <div class="d-flex justify-content-end pt-3 pb-2">
-            <button class="btn text-white fw-semibold my-button-color" href="#">
+            <a class="btn text-white fw-semibold my-button-color" href="{% url 'export-statistics' %}">
                 <img style="width: 20px; height: 20px;" src="{% static 'img/excel.png' %}">
                 <pe class="ps-2">Exportar</pe>
-            </button>
+            </a>
         </div>
         <h1 class="pb-0 fs-2 text-color">Generación {{ cycle }}</h1>
 

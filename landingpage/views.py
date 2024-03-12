@@ -14,7 +14,10 @@ def common_users(user):
 #@user_passes_test(admin_users)
 @login_required
 def landingPage(request):
-    return render(request, 'landingpage/landing_page.html')
+    if admin_users(request.user):
+        return render(request, 'landingpage/landing_page.html')
+    else:
+        return render(request, 'landingpage/common_user_landing_page.html')
 
 class MyLoginView(LoginView):
     def form_invalid(self, form):

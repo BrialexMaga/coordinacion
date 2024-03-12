@@ -1,6 +1,20 @@
 import factory
+from factory import post_generation
 import random
-from .models import Student, Contact
+from .models import Student, Contact, Status, School_Cycle, Career, Syllabus
+from studenthistory.models import Section, GradePeriod, Course
+
+#from .factories import CourseFactory
+
+class CourseFactory(factory.Factory):
+    class Meta:
+        model = Course
+
+    school_cycle = factory.LazyAttribute(lambda _: School_Cycle.objects.get(year=2023, cycle_period='B'))
+    grade = factory.Faker('random_int', min=50, max=100)
+    grade_period = factory.LazyAttribute(lambda _: GradePeriod.objects.get(code_name='OE'))
+    upload_date = factory.Faker('date_this_year')
+
 
 class StudentFactory(factory.Factory):
     class Meta:
@@ -8,21 +22,16 @@ class StudentFactory(factory.Factory):
     
     code = factory.Faker('random_int', min=210000000, max=300000000)
     name = factory.Faker('name')
-    status = factory.Faker('random_element', elements=['activo', 'inactivo', 'art 34', 'art 35'])
-    
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):
-        min_num = 2010
-        max_num = 2023
-        random_num = random.randint(min_num, max_num)
-        elements = ['A', 'B']
-        random_element = random.choice(elements)
-        admission_cycle = f'{random_num}{random_element}'
+    first_last_name = factory.Faker('last_name')
+    second_last_name = factory.Faker('last_name')
+    status = factory.LazyAttribute(lambda _: Status.objects.get(code_name='AC'))
+    exchange = factory.Faker('boolean', chance_of_getting_true=0)
+    admission_cycle = factory.LazyAttribute(lambda _: School_Cycle.objects.get(year=2023, cycle_period='B'))
+    last_cycle = factory.LazyAttribute(lambda _: School_Cycle.objects.get(year=2023, cycle_period='B'))
+    idCareer = factory.LazyAttribute(lambda _: Career.objects.get(code_name='INCO'))
+    syllabus = factory.LazyAttribute(lambda _: Syllabus.objects.get(name='2016'))
 
-        kwargs['admission_cycle'] = admission_cycle
 
-        return super(StudentFactory, cls)._create(model_class, *args, **kwargs)
-    
 class ContactFactory(factory.Factory):
     class Meta:
         model = Contact
@@ -31,3 +40,4 @@ class ContactFactory(factory.Factory):
     email = factory.Faker('email')
     udg_email = factory.Faker('email')
     emergency_phone = factory.Faker('phone_number')
+    url_socialnet = factory.Faker('url')

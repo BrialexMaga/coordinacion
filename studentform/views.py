@@ -11,9 +11,13 @@ import csv
 
 from django.contrib.auth.decorators import login_required
 
+def admin_users(user):
+    return user.groups.filter(name='Administradores').exists()
+
 @login_required
 def index(request):
-    students = Student.objects.all()
+    #students = Student.objects.all()
+    students = Student.objects.select_related('status').all()
 
     if request.GET.get('name') or request.GET.get('code') or request.GET.get('status') or request.GET.get('admission_cycle') or request.GET.get('last_cycle'):
         name = request.GET.get('name', '')
@@ -55,7 +59,11 @@ def index(request):
                                    last_cycle__year__icontains=last_year, last_cycle__cycle_period__icontains=last_period)
 
     request.session['filtered_students'] = list(students.values_list('idStudent', flat=True))
-    return render(request, "studentform/index.html", {'students': students})
+
+    if admin_users(request.user):
+        return render(request, "studentform/index.html", {'students': students})
+    else:
+        return render(request, 'studentform/common_user_student_contact.html', {'student': None, 'contact': None})
 
 @login_required
 def exportContacts(request):
@@ -77,7 +85,8 @@ def exportContacts(request):
                      'Custom Field 1 - Value', 'Custom Field 2 - Type', 'Custom Field 2 - Value'])
     
     filtered_students = request.session.get('filtered_students', [])
-    contacts = Contact.objects.filter(idStudent__in=filtered_students)
+    #contacts = Contact.objects.filter(idStudent__in=filtered_students)
+    contacts = Contact.objects.select_related('idStudent').filter(idStudent__in=filtered_students)
 
     for contact in contacts:
         # Data
@@ -98,7 +107,8 @@ def exportContacts(request):
 @login_required
 def exportStudentData(request, idStudent):
     student = Student.objects.get(pk=idStudent)
-    contact = Contact.objects.get(idStudent=student)
+    #contact = Contact.objects.get(idStudent=student)
+    contact = Contact.objects.select_related('idStudent', 'idStudent__status').get(idStudent=student)
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="{student.name}_{student.first_last_name}_{student.second_last_name}_contact.csv"'
@@ -133,8 +143,12 @@ def exportStudentData(request, idStudent):
 
 @login_required
 def showContact(request, idStudent):
-    student = get_object_or_404(Student, pk=idStudent)
-    contact = student.contact
+    #student = get_object_or_404(Student, pk=idStudent)
+    student = get_object_or_404(Student.objects.select_related('contact'), pk=idStudent)
+    try:
+        contact = student.contact
+    except Contact.DoesNotExist:
+        contact = None
 
     return render(request, 'studentform/student_contact.html', {'student': student, 'contact': contact})
 

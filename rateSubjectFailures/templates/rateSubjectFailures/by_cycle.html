@@ -2,9 +2,17 @@
 
 {% block title %}Por Ciclo{% endblock %}
 
+{% load static %}
 {% block content %}
     <div class="container-fluid">
-        <h1 class="pt-3 pb-2 fs-2 text-color">Estadísticas</h1>
+        <br>
+        <div class="d-flex justify-content-end">
+            <a class="btn text-white fw-semibold my-button-color" href={% url 'export-by-cycle-page' %}>
+                <img style="width: 20px; height: 20px;" src="{% static 'img/excel.png' %}">
+                <pe class="ps-2">Exportar</pe>
+            </a>
+        </div>
+        <h1 class="pt-0 pb-2 fs-2 text-color">Estadísticas - {{ title }} </h1>
 
         <div class="stats-container">
             <table class="table table-striped text-center">
